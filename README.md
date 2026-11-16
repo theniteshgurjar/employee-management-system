@@ -248,10 +248,10 @@ The system automatically initializes demo accounts on startup:
 
 | Role | Username | Password | Purpose |
 | :--- | :--- | :--- | :--- |
-| **👑 ADMIN** | `admin` | `Admin@12345` | Full administrative control, system settings, user roles |
-| **💼 HR** | `hr_lead` | `Hr@12345` | Employee onboarding, department configuration, all leaves |
-| **📊 MANAGER** | `manager` | `Manager@12345` | Direct team oversight and team leave approval/rejection |
-| **👤 EMPLOYEE**| `john_doe` | `Employee@12345`| Self check-in/out, leave applications, personal profile |
+| **👑 ADMIN** | `admin` | `admin123` | Full administrative control, system settings, user roles |
+| **💼 HR** | `hr_lead` | `hr123` | Employee onboarding, department configuration, all leaves |
+| **📊 MANAGER** | `manager` | `manager123` | Direct team oversight and team leave approval/rejection |
+| **👤 EMPLOYEE**| `john_doe` | `employee123`| Self check-in/out, leave applications, personal profile |
 
 *(Tip: On the React login page at `http://localhost:3000/login`, you can click the quick demo buttons to auto-fill these credentials instantly!)*
 
