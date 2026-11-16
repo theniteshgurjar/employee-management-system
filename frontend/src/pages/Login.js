@@ -14,13 +14,13 @@ import {
 } from 'lucide-react';
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [username, setUsername] = useState(location.state?.prefillUser || '');
+  const [password, setPassword] = useState(location.state?.prefillPass || '');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const { login, loading } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const from = location.state?.from?.pathname || '/dashboard';
 

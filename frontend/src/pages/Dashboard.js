@@ -11,7 +11,6 @@ import {
   CheckCircle2,
   CalendarPlus,
   ShieldAlert,
-  Sparkles,
   Activity,
   ChevronRight,
   Calendar,
@@ -58,229 +57,219 @@ const Dashboard = () => {
   const isManager = hasAnyRole(['MANAGER']) && !isAdminOrHr;
   const isEmployeeOnly = !hasAnyRole(['ADMIN', 'HR', 'MANAGER']);
 
-  // Build Role-Specific Stat Cards
+  // Role-Specific Stat Cards (Clean, calm monochromatic design)
   let statCards = [];
 
   if (isAdminOrHr) {
-    // Enterprise & People Operations Cards (Admin & HR)
     statCards = [
       {
         title: 'Total Workforce',
         value: stats?.totalEmployees ?? '0',
-        sub: 'Active organizational roster',
+        sub: 'Active employee records',
         icon: Users,
-        gradient: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
-        badge: 'Enterprise',
+        iconColor: '#2563eb',
+        iconBg: '#eff6ff',
       },
       {
         title: 'Active Departments',
         value: stats?.totalDepartments ?? '0',
-        sub: 'Operational business units',
+        sub: 'Operational divisions',
         icon: Building2,
-        gradient: 'linear-gradient(135deg, #0284c7 0%, #06b6d4 100%)',
-        badge: 'Divisions',
+        iconColor: '#4f46e5',
+        iconBg: '#eef2ff',
       },
       {
         title: 'Present Today',
         value: stats?.presentToday ?? '0',
-        sub: 'Clocked in today',
+        sub: 'Staff clocked in today',
         icon: UserCheck,
-        gradient: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
-        badge: 'Active duty',
+        iconColor: '#059669',
+        iconBg: '#ecfdf5',
       },
       {
-        title: 'Absent / Out of Office',
+        title: 'Absent Today',
         value: stats?.absentToday ?? '0',
         sub: 'Unclocked or on leave',
         icon: UserX,
-        gradient: 'linear-gradient(135deg, #e11d48 0%, #f43f5e 100%)',
-        badge: 'Absence log',
+        iconColor: '#dc2626',
+        iconBg: '#fef2f2',
       },
       {
         title: 'Pending Leaves',
         value: stats?.pendingLeaves ?? '0',
         sub: 'Requires review decision',
         icon: Clock,
-        gradient: 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)',
-        badge: 'Queue',
+        iconColor: '#d97706',
+        iconBg: '#fffbeb',
       },
       {
         title: 'Approved Leaves',
         value: stats?.approvedLeaves ?? '0',
         sub: 'Authorized time off',
         icon: CheckCircle2,
-        gradient: 'linear-gradient(135deg, #2563eb 0%, #6366f1 100%)',
-        badge: 'Approved',
+        iconColor: '#0284c7',
+        iconBg: '#f0f9ff',
       },
     ];
   } else if (isManager) {
-    // Team Supervision Cards (Manager)
     statCards = [
       {
         title: 'Present Today',
         value: stats?.presentToday ?? '0',
-        sub: 'Staff clocked in today',
+        sub: 'Team members on shift',
         icon: UserCheck,
-        gradient: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
-        badge: 'On duty',
+        iconColor: '#059669',
+        iconBg: '#ecfdf5',
       },
       {
         title: 'Absent / Off Today',
         value: stats?.absentToday ?? '0',
-        sub: 'Unclocked or on leave',
+        sub: 'Out of office',
         icon: UserX,
-        gradient: 'linear-gradient(135deg, #e11d48 0%, #f43f5e 100%)',
-        badge: 'Out of office',
+        iconColor: '#dc2626',
+        iconBg: '#fef2f2',
       },
       {
         title: 'Pending Approvals',
         value: stats?.pendingLeaves ?? '0',
         sub: 'Team requests awaiting you',
         icon: Clock,
-        gradient: 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)',
-        badge: 'Action needed',
+        iconColor: '#d97706',
+        iconBg: '#fffbeb',
       },
       {
         title: 'Approved Leaves',
         value: stats?.approvedLeaves ?? '0',
-        sub: 'Authorized time-off',
+        sub: 'Approved time-off',
         icon: CheckCircle2,
-        gradient: 'linear-gradient(135deg, #2563eb 0%, #6366f1 100%)',
-        badge: 'Approved',
+        iconColor: '#2563eb',
+        iconBg: '#eff6ff',
       },
       {
         title: 'My Casual Balance',
-        value: `${balance?.casualLeaveBalance ?? 0} days`,
-        sub: 'Personal allocation remaining',
+        value: `${balance?.casualLeaveBalance ?? 0}d`,
+        sub: 'Remaining casual quota',
         icon: Calendar,
-        gradient: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
-        badge: 'Available',
+        iconColor: '#4f46e5',
+        iconBg: '#eef2ff',
       },
       {
         title: 'My Earned Balance',
-        value: `${balance?.earnedLeaveBalance ?? 0} days`,
+        value: `${balance?.earnedLeaveBalance ?? 0}d`,
         sub: 'Accrued vacation balance',
-        icon: Sparkles,
-        gradient: 'linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%)',
-        badge: 'Accrued',
+        icon: Award,
+        iconColor: '#7c3aed',
+        iconBg: '#f5f3ff',
       },
     ];
   } else {
-    // Self-Service Employee Cards (Employee)
+    // Pure Self-Service Employee View
     statCards = [
       {
         title: 'Casual Leave Balance',
         value: `${balance?.casualLeaveBalance ?? 0} days`,
-        sub: 'Annual casual quota remaining',
+        sub: 'Available for personal use',
         icon: Calendar,
-        gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-        badge: 'Available',
+        iconColor: '#2563eb',
+        iconBg: '#eff6ff',
       },
       {
         title: 'Sick Leave Balance',
         value: `${balance?.sickLeaveBalance ?? 0} days`,
         sub: 'Medical recovery allowance',
         icon: Activity,
-        gradient: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
-        badge: 'Medical',
+        iconColor: '#059669',
+        iconBg: '#ecfdf5',
       },
       {
         title: 'Earned Leave Balance',
         value: `${balance?.earnedLeaveBalance ?? 0} days`,
-        sub: 'Accrued paid vacation days',
-        icon: Sparkles,
-        gradient: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
-        badge: 'Vacation',
+        sub: 'Accrued vacation balance',
+        icon: Award,
+        iconColor: '#7c3aed',
+        iconBg: '#f5f3ff',
       },
       {
-        title: 'Unpaid Leave Taken',
+        title: 'Unpaid Leave Used',
         value: `${balance?.unpaidLeaveUsed ?? 0} days`,
-        sub: 'Loss of pay duration taken',
+        sub: 'Loss of pay taken',
         icon: Clock,
-        gradient: 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)',
-        badge: 'LWP',
+        iconColor: '#d97706',
+        iconBg: '#fffbeb',
       },
       {
         title: "Today's Status",
         value: !todayAttendance
           ? 'Not Clocked'
           : !todayAttendance.checkOutTime
-          ? 'Active Shift'
+          ? 'On Shift'
           : 'Completed',
-        sub: todayAttendance?.checkInTime ? `Clocked in at ${todayAttendance.checkInTime}` : 'Punch in to start shift',
+        sub: todayAttendance?.checkInTime ? `Started at ${todayAttendance.checkInTime}` : 'Check in to start session',
         icon: UserCheck,
-        gradient: !todayAttendance
-          ? 'linear-gradient(135deg, #64748b 0%, #475569 100%)'
-          : !todayAttendance.checkOutTime
-          ? 'linear-gradient(135deg, #059669 0%, #10b981 100%)'
-          : 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
-        badge: 'Attendance',
+        iconColor: !todayAttendance ? '#64748b' : !todayAttendance.checkOutTime ? '#059669' : '#2563eb',
+        iconBg: !todayAttendance ? '#f1f5f9' : !todayAttendance.checkOutTime ? '#ecfdf5' : '#eff6ff',
       },
       {
-        title: 'Hours Worked Today',
+        title: 'Shift Duration',
         value: todayAttendance?.workingHours != null
           ? `${todayAttendance.workingHours} hrs`
           : todayAttendance?.checkInTime
           ? 'In Progress'
           : '0.0 hrs',
-        sub: 'Target: 8.0 hours standard shift',
-        icon: Award,
-        gradient: 'linear-gradient(135deg, #0284c7 0%, #06b6d4 100%)',
-        badge: 'Shift hours',
+        sub: 'Target: 8.0 hours standard',
+        icon: Clock,
+        iconColor: '#0284c7',
+        iconBg: '#f0f9ff',
       },
     ];
   }
 
-  // Primary Role Display Label
   const roleDisplay = user?.roles?.[0]?.replace('ROLE_', '') || 'EMPLOYEE';
 
   return (
     <div>
-      {/* Hero Welcome Banner */}
+      {/* Clean Hero Header */}
       <div style={styles.heroBanner}>
-        <div style={styles.heroLeft}>
+        <div>
           <div style={styles.roleChip}>
-            <Sparkles size={13} color="var(--accent-600)" />
-            <span>
-              {isAdminOrHr ? 'Executive Workspace' : isManager ? 'Management Workspace' : 'Employee Self-Service'} &bull; {roleDisplay}
-            </span>
+            {roleDisplay} WORKSPACE
           </div>
           <h1 style={styles.heroTitle}>
-            {getGreeting()}, {user?.firstName ? `${user.firstName} ${user.lastName}` : user?.username}!
+            {getGreeting()}, {user?.firstName ? `${user.firstName} ${user.lastName}` : user?.username}
           </h1>
           <p style={styles.heroSubtitle}>
             {isAdminOrHr
-              ? 'Here is your enterprise workforce overview and daily organizational metrics.'
+              ? 'Organization summary and employee management controls.'
               : isManager
-              ? 'Monitor your team presence and review pending leave applications.'
-              : 'Track your personal leave balances, working hours, and timecard status.'}
+              ? 'Team attendance monitoring and pending leave review queue.'
+              : 'Your personal timecard, attendance status, and leave balances.'}
           </p>
         </div>
 
-        {/* Hero Role-Specific Actions */}
+        {/* Clean Actions */}
         <div style={styles.heroActions}>
           {isEmployeeOnly && (
             <Link to="/attendance" className="btn btn-secondary">
-              <Clock size={16} />
-              <span>Punch Timecard</span>
+              <Clock size={15} />
+              <span>Timecard</span>
             </Link>
           )}
 
-          <Link to="/leaves/apply" className="btn btn-primary" style={{ boxShadow: '0 4px 14px rgba(79, 70, 229, 0.35)' }}>
-            <CalendarPlus size={16} />
+          <Link to="/leaves/apply" className="btn btn-primary">
+            <CalendarPlus size={15} />
             <span>Apply for Leave</span>
           </Link>
 
           {isManager && (
             <Link to="/leaves/approval" className="btn btn-secondary">
-              <CheckSquare size={16} />
+              <CheckSquare size={15} />
               <span>Review Requests</span>
             </Link>
           )}
 
           {isAdminOrHr && (
             <Link to="/employees/new" className="btn btn-secondary">
-              <Users size={16} />
+              <Users size={15} />
               <span>Onboard Staff</span>
             </Link>
           )}
@@ -294,69 +283,65 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Role-Tailored KPI Stats Grid */}
+      {/* Clean Stat Cards */}
       <div style={styles.statsGrid}>
         {statCards.map((card, idx) => {
           const Icon = card.icon;
           return (
-            <div key={idx} className="ems-card ems-card-hover" style={styles.statCard}>
+            <div key={idx} className="ems-card" style={styles.statCard}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
                   <span style={styles.statTitle}>{card.title}</span>
-                  <div style={styles.statValue}>{loading ? '...' : card.value}</div>
+                  <div style={styles.statValue}>{loading ? '—' : card.value}</div>
                 </div>
-                <div style={{ ...styles.iconBadge, background: card.gradient }}>
-                  <Icon size={22} color="#ffffff" />
+                <div style={{ width: '38px', height: '38px', borderRadius: '8px', backgroundColor: card.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon size={19} color={card.iconColor} />
                 </div>
               </div>
               <div style={styles.statFooter}>
-                <span style={{ fontSize: '0.78rem', color: 'var(--slate-500)' }}>{card.sub}</span>
-                <span className="badge badge-neutral" style={{ fontSize: '0.7rem' }}>
-                  {card.badge}
-                </span>
+                <span style={{ fontSize: '0.78rem', color: '#64748b' }}>{card.sub}</span>
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Middle Section: Live Workday Card + Role-Specific Shortcuts */}
+      {/* Two Column Layout: Timecard + Shortcuts */}
       <div style={styles.twoColumnGrid}>
-        {/* Today's Punch Clock Card */}
+        {/* Today's Timecard */}
         <div className="ems-card" style={{ marginBottom: 0 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Clock size={18} color="var(--primary-600)" />
-              <h2 style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--slate-900)' }}>
-                Today's Workday Tracker
+              <Clock size={16} color="#0f172a" />
+              <h2 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                Today's Timecard
               </h2>
             </div>
-            <Link to="/attendance" style={{ fontSize: '0.825rem', color: 'var(--primary-600)', textDecoration: 'none', fontWeight: '600' }}>
-              View Full Log &rarr;
+            <Link to="/attendance" style={{ fontSize: '0.82rem', color: '#2563eb', textDecoration: 'none', fontWeight: 600 }}>
+              Full log &rarr;
             </Link>
           </div>
 
-          <div style={styles.punchDetailsBox}>
-            <div style={styles.punchStatusIndicator}>
-              <div
+          <div style={styles.punchBox}>
+            <div style={styles.punchStatusRow}>
+              <span
                 style={{
-                  width: '10px',
-                  height: '10px',
+                  width: '8px',
+                  height: '8px',
                   borderRadius: '50%',
                   backgroundColor: !todayAttendance ? '#94a3b8' : !todayAttendance.checkOutTime ? '#10b981' : '#3b82f6',
-                  boxShadow: !todayAttendance ? 'none' : '0 0 10px rgba(16, 185, 129, 0.7)',
                 }}
               />
-              <span style={{ fontWeight: '700', fontSize: '0.95rem' }}>
+              <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>
                 {!todayAttendance
-                  ? 'Not Clocked In Yet'
+                  ? 'Not Clocked In Today'
                   : !todayAttendance.checkOutTime
-                  ? 'Currently Active (On the Clock)'
-                  : 'Workday Completed'}
+                  ? 'Active (Clocked In)'
+                  : 'Shift Completed'}
               </span>
             </div>
 
-            <div style={styles.punchRowGrid}>
+            <div style={styles.punchMetricsGrid}>
               <div style={styles.punchMetric}>
                 <span style={styles.metricLabel}>Clock In</span>
                 <strong style={styles.metricVal}>{todayAttendance?.checkInTime || '—:—'}</strong>
@@ -367,129 +352,88 @@ const Dashboard = () => {
               </div>
               <div style={styles.punchMetric}>
                 <span style={styles.metricLabel}>Duration</span>
-                <strong style={{ ...styles.metricVal, color: 'var(--primary-600)' }}>
-                  {todayAttendance?.workingHours != null ? `${todayAttendance.workingHours} hrs` : (todayAttendance?.checkInTime ? 'In Progress' : '0.0 hrs')}
+                <strong style={{ ...styles.metricVal, color: '#2563eb' }}>
+                  {todayAttendance?.workingHours != null ? `${todayAttendance.workingHours} hrs` : (todayAttendance?.checkInTime ? 'In progress' : '0.0 hrs')}
                 </strong>
               </div>
             </div>
 
-            {/* Shift Progress Bar (Target 8 hours) */}
-            <div style={{ marginTop: '16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--slate-500)', marginBottom: '6px' }}>
-                <span>Daily 8-Hour Target Progress</span>
+            {/* Target 8h Bar */}
+            <div style={{ marginTop: '14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#64748b', marginBottom: '5px' }}>
+                <span>Daily 8h Target</span>
                 <span>
                   {todayAttendance?.workingHours
                     ? `${Math.min(100, Math.round((todayAttendance.workingHours / 8) * 100))}%`
-                    : todayAttendance?.checkInTime ? 'In Progress' : '0%'}
+                    : todayAttendance?.checkInTime ? 'In progress' : '0%'}
                 </span>
               </div>
-              <div style={{ width: '100%', height: '8px', backgroundColor: 'var(--slate-100)', borderRadius: '999px', overflow: 'hidden' }}>
+              <div style={{ width: '100%', height: '6px', backgroundColor: '#e2e8f0', borderRadius: '999px', overflow: 'hidden' }}>
                 <div
                   style={{
                     height: '100%',
-                    backgroundColor: 'var(--primary-600)',
+                    backgroundColor: '#0f172a',
                     width: todayAttendance?.workingHours
                       ? `${Math.min(100, (todayAttendance.workingHours / 8) * 100)}%`
-                      : todayAttendance?.checkInTime ? '35%' : '0%',
-                    transition: 'width 0.4s ease',
+                      : todayAttendance?.checkInTime ? '30%' : '0%',
+                    transition: 'width 0.3s ease',
                   }}
                 />
               </div>
             </div>
           </div>
-
-          {/* Quick Leave Quotas Mini Pill */}
-          {balance && (
-            <div style={{ marginTop: '16px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              <div style={styles.miniQuota}>
-                <span>Casual:</span> <strong>{balance.casualLeaveBalance}d left</strong>
-              </div>
-              <div style={styles.miniQuota}>
-                <span>Sick:</span> <strong>{balance.sickLeaveBalance}d left</strong>
-              </div>
-              <div style={styles.miniQuota}>
-                <span>Earned:</span> <strong>{balance.earnedLeaveBalance}d left</strong>
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Role-Specific Quick Navigation Shortcuts */}
+        {/* Shortcuts */}
         <div className="ems-card" style={{ marginBottom: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '18px' }}>
-            <Activity size={18} color="var(--primary-600)" />
-            <h2 style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--slate-900)' }}>
-              Quick Navigation Shortcuts
+          <div style={{ marginBottom: '16px' }}>
+            <h2 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+              Quick Navigation
             </h2>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {/* Standard Employee Shortcuts */}
-            <Link to="/attendance" className="ems-card ems-card-hover" style={styles.shortcutRow}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <Link to="/attendance" className="ems-card ems-card-hover" style={styles.shortcutItem}>
               <div>
-                <div style={styles.shortcutName}>Attendance & Timecard</div>
-                <div style={styles.shortcutDesc}>Punch in/out, view working duration and daily status</div>
+                <div style={styles.shortcutTitle}>Attendance & Punch Clock</div>
+                <div style={styles.shortcutDesc}>Record check-in, check-out and view logs</div>
               </div>
-              <ChevronRight size={18} color="var(--slate-400)" />
+              <ChevronRight size={16} color="#94a3b8" />
             </Link>
 
-            <Link to="/leaves/balance" className="ems-card ems-card-hover" style={styles.shortcutRow}>
+            <Link to="/leaves/balance" className="ems-card ems-card-hover" style={styles.shortcutItem}>
               <div>
-                <div style={styles.shortcutName}>Leave Balances & Quotas</div>
-                <div style={styles.shortcutDesc}>Inspect Casual, Sick, and Earned leave balances</div>
+                <div style={styles.shortcutTitle}>Leave Balances</div>
+                <div style={styles.shortcutDesc}>Inspect casual, sick, and earned quotas</div>
               </div>
-              <ChevronRight size={18} color="var(--slate-400)" />
+              <ChevronRight size={16} color="#94a3b8" />
             </Link>
 
-            <Link to="/leaves/history" className="ems-card ems-card-hover" style={styles.shortcutRow}>
+            <Link to="/leaves/history" className="ems-card ems-card-hover" style={styles.shortcutItem}>
               <div>
-                <div style={styles.shortcutName}>My Leave Applications History</div>
-                <div style={styles.shortcutDesc}>Track status outcomes, cancel requests, and decision trails</div>
+                <div style={styles.shortcutTitle}>Leave History</div>
+                <div style={styles.shortcutDesc}>Track status outcomes and cancellation options</div>
               </div>
-              <ChevronRight size={18} color="var(--slate-400)" />
+              <ChevronRight size={16} color="#94a3b8" />
             </Link>
 
-            {/* Manager Shortcuts */}
             {hasAnyRole(['ADMIN', 'HR', 'MANAGER']) && (
-              <Link to="/leaves/approval" className="ems-card ems-card-hover" style={styles.shortcutRow}>
+              <Link to="/leaves/approval" className="ems-card ems-card-hover" style={styles.shortcutItem}>
                 <div>
-                  <div style={styles.shortcutName}>Leave Approval Queue</div>
+                  <div style={styles.shortcutTitle}>Leave Approvals Queue</div>
                   <div style={styles.shortcutDesc}>Review and approve pending team requests</div>
                 </div>
-                <ChevronRight size={18} color="var(--slate-400)" />
+                <ChevronRight size={16} color="#94a3b8" />
               </Link>
             )}
 
-            {/* HR & Admin Shortcuts */}
             {hasAnyRole(['ADMIN', 'HR']) && (
-              <Link to="/departments" className="ems-card ems-card-hover" style={styles.shortcutRow}>
+              <Link to="/departments" className="ems-card ems-card-hover" style={styles.shortcutItem}>
                 <div>
-                  <div style={styles.shortcutName}>Department Management</div>
-                  <div style={styles.shortcutDesc}>Configure organizational divisions and headcount</div>
+                  <div style={styles.shortcutTitle}>Departments</div>
+                  <div style={styles.shortcutDesc}>Configure business divisions and codes</div>
                 </div>
-                <ChevronRight size={18} color="var(--slate-400)" />
-              </Link>
-            )}
-
-            {/* Admin Only Shortcut */}
-            {hasAnyRole(['ADMIN']) && (
-              <Link to="/users" className="ems-card ems-card-hover" style={styles.shortcutRow}>
-                <div>
-                  <div style={styles.shortcutName}>User & Role Provisioning</div>
-                  <div style={styles.shortcutDesc}>Provision system accounts and assign security privileges</div>
-                </div>
-                <ChevronRight size={18} color="var(--slate-400)" />
-              </Link>
-            )}
-
-            {/* Employee Self-Service Profile Shortcut */}
-            {isEmployeeOnly && (
-              <Link to="/profile" className="ems-card ems-card-hover" style={styles.shortcutRow}>
-                <div>
-                  <div style={styles.shortcutName}>My Employee Profile</div>
-                  <div style={styles.shortcutDesc}>View personal records, designation & direct manager info</div>
-                </div>
-                <ChevronRight size={18} color="var(--slate-400)" />
+                <ChevronRight size={16} color="#94a3b8" />
               </Link>
             )}
           </div>
@@ -502,122 +446,95 @@ const Dashboard = () => {
 const styles = {
   heroBanner: {
     backgroundColor: '#ffffff',
-    borderRadius: 'var(--radius-xl)',
-    border: '1px solid var(--slate-200)',
-    padding: '28px 32px',
+    borderRadius: '8px',
+    border: '1px solid #e2e8f0',
+    padding: '24px 28px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '26px',
-    boxShadow: 'var(--shadow-card)',
+    marginBottom: '20px',
     flexWrap: 'wrap',
-    gap: '20px',
-  },
-  heroLeft: {
-    maxWidth: '650px',
+    gap: '16px',
   },
   roleChip: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '6px',
-    backgroundColor: 'var(--accent-50)',
-    border: '1px solid rgba(99, 102, 241, 0.25)',
-    borderRadius: '9999px',
-    padding: '4px 12px',
-    fontSize: '0.75rem',
-    fontWeight: '700',
-    color: 'var(--accent-700)',
-    marginBottom: '10px',
-  },
-  heroTitle: {
-    fontSize: '1.65rem',
-    fontWeight: '800',
-    color: 'var(--slate-900)',
-    letterSpacing: '-0.02em',
+    fontSize: '0.72rem',
+    fontWeight: 700,
+    color: '#64748b',
+    letterSpacing: '0.06em',
     marginBottom: '6px',
   },
+  heroTitle: {
+    fontSize: '1.45rem',
+    fontWeight: 800,
+    color: '#0f172a',
+    letterSpacing: '-0.02em',
+    marginBottom: '4px',
+  },
   heroSubtitle: {
-    fontSize: '0.9rem',
-    color: 'var(--slate-500)',
-    lineHeight: 1.5,
+    fontSize: '0.88rem',
+    color: '#64748b',
   },
   heroActions: {
     display: 'flex',
     alignItems: 'center',
-    gap: '10px',
-    flexWrap: 'wrap',
+    gap: '8px',
   },
   statsGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-    gap: '20px',
-    marginBottom: '26px',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gap: '14px',
+    marginBottom: '20px',
   },
   statCard: {
     marginBottom: 0,
-    padding: '20px 24px',
+    padding: '16px 20px',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    minHeight: '140px',
   },
   statTitle: {
-    fontSize: '0.78rem',
-    fontWeight: '600',
-    color: 'var(--slate-500)',
+    fontSize: '0.74rem',
+    fontWeight: 600,
+    color: '#64748b',
     textTransform: 'uppercase',
     letterSpacing: '0.04em',
   },
   statValue: {
-    fontSize: '1.75rem',
-    fontWeight: '800',
-    color: 'var(--slate-900)',
-    marginTop: '6px',
+    fontSize: '1.5rem',
+    fontWeight: 800,
+    color: '#0f172a',
+    marginTop: '4px',
     letterSpacing: '-0.02em',
   },
-  iconBadge: {
-    width: '44px',
-    height: '44px',
-    borderRadius: '12px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.12)',
-    flexShrink: 0,
-  },
   statFooter: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: '14px',
-    paddingTop: '10px',
-    borderTop: '1px solid var(--slate-100)',
+    marginTop: '12px',
+    paddingTop: '8px',
+    borderTop: '1px solid #f1f5f9',
   },
   twoColumnGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
-    gap: '24px',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+    gap: '20px',
   },
-  punchDetailsBox: {
+  punchBox: {
     backgroundColor: '#f8fafc',
-    borderRadius: 'var(--radius-md)',
-    border: '1px solid var(--slate-200)',
-    padding: '18px 20px',
+    borderRadius: '6px',
+    border: '1px solid #e2e8f0',
+    padding: '16px 18px',
   },
-  punchStatusIndicator: {
+  punchStatusRow: {
     display: 'flex',
     alignItems: 'center',
-    gap: '10px',
-    color: 'var(--slate-800)',
-    marginBottom: '16px',
+    gap: '8px',
+    marginBottom: '14px',
   },
-  punchRowGrid: {
+  punchMetricsGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(3, 1fr)',
-    gap: '12px',
-    padding: '12px 0',
-    borderTop: '1px solid var(--slate-200)',
-    borderBottom: '1px solid var(--slate-200)',
+    gap: '8px',
+    padding: '10px 0',
+    borderTop: '1px solid #e2e8f0',
+    borderBottom: '1px solid #e2e8f0',
   },
   punchMetric: {
     display: 'flex',
@@ -626,45 +543,36 @@ const styles = {
     textAlign: 'center',
   },
   metricLabel: {
-    fontSize: '0.72rem',
-    fontWeight: '600',
-    color: 'var(--slate-400)',
+    fontSize: '0.7rem',
+    color: '#64748b',
+    fontWeight: 600,
     textTransform: 'uppercase',
   },
   metricVal: {
-    fontSize: '1rem',
-    fontWeight: '700',
-    color: 'var(--slate-800)',
+    fontSize: '0.92rem',
+    fontWeight: 700,
+    color: '#0f172a',
     marginTop: '2px',
   },
-  miniQuota: {
-    backgroundColor: '#ffffff',
-    border: '1px solid var(--slate-200)',
-    borderRadius: '999px',
-    padding: '4px 12px',
-    fontSize: '0.78rem',
-    color: 'var(--slate-600)',
-  },
-  shortcutRow: {
+  shortcutItem: {
     margin: 0,
-    padding: '14px 18px',
+    padding: '12px 16px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     textDecoration: 'none',
     backgroundColor: '#ffffff',
-    cursor: 'pointer',
-    transition: 'all 0.18s ease',
+    border: '1px solid #e2e8f0',
+    borderRadius: '6px',
   },
-  shortcutName: {
-    fontSize: '0.9rem',
-    fontWeight: '700',
-    color: 'var(--slate-800)',
+  shortcutTitle: {
+    fontSize: '0.88rem',
+    fontWeight: 600,
+    color: '#0f172a',
   },
   shortcutDesc: {
-    fontSize: '0.78rem',
-    color: 'var(--slate-500)',
-    marginTop: '2px',
+    fontSize: '0.75rem',
+    color: '#64748b',
   },
 };
 
