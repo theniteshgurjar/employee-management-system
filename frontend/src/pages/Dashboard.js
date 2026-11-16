@@ -10,96 +10,130 @@ import {
   Clock,
   CheckCircle2,
   CalendarPlus,
-  ArrowRight,
   ShieldAlert,
+  Sparkles,
+  Activity,
+  ChevronRight,
 } from 'lucide-react';
 
 const Dashboard = () => {
   const { user, hasAnyRole } = useAuth();
   const [stats, setStats] = useState(null);
+  const [todayAttendance, setTodayAttendance] = useState(null);
+  const [balance, setBalance] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const res = await api.get('/dashboard/stats');
-        setStats(res.data.data);
+        const [statsRes, attRes, balRes] = await Promise.all([
+          api.get('/dashboard/stats'),
+          api.get('/attendance/today').catch(() => ({ data: { data: null } })),
+          api.get('/leaves/my-balance').catch(() => ({ data: { data: null } })),
+        ]);
+        setStats(statsRes.data.data);
+        setTodayAttendance(attRes.data.data);
+        setBalance(balRes.data.data);
       } catch (err) {
         setError('Failed to load dashboard metrics.');
       } finally {
         setLoading(false);
       }
     };
-    fetchStats();
+    fetchDashboardData();
   }, []);
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
 
   const statCards = [
     {
-      title: 'Total Employees',
+      title: 'Total Workforce',
       value: stats?.totalEmployees ?? '0',
+      sub: 'Active organizational roster',
       icon: Users,
-      color: '#4f46e5',
-      bgColor: '#eef2ff',
+      gradient: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
+      accentColor: '#4f46e5',
+      badge: '+100% active',
     },
     {
       title: 'Active Departments',
       value: stats?.totalDepartments ?? '0',
+      sub: 'Configured business units',
       icon: Building2,
-      color: '#0891b2',
-      bgColor: '#ecfeff',
+      gradient: 'linear-gradient(135deg, #0284c7 0%, #06b6d4 100%)',
+      accentColor: '#0284c7',
+      badge: 'Full operational',
     },
     {
       title: 'Present Today',
       value: stats?.presentToday ?? '0',
+      sub: 'Clocked in today',
       icon: UserCheck,
-      color: '#059669',
-      bgColor: '#ecfdf5',
+      gradient: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+      accentColor: '#059669',
+      badge: 'Live logs',
     },
     {
-      title: 'Absent Today',
+      title: 'Absent / Out of Office',
       value: stats?.absentToday ?? '0',
+      sub: 'Unclocked or on leave',
       icon: UserX,
-      color: '#dc2626',
-      bgColor: '#fef2f2',
+      gradient: 'linear-gradient(135deg, #e11d48 0%, #f43f5e 100%)',
+      accentColor: '#e11d48',
+      badge: 'Daily tracking',
     },
     {
       title: 'Pending Leaves',
       value: stats?.pendingLeaves ?? '0',
+      sub: 'Awaiting manager decision',
       icon: Clock,
-      color: '#d97706',
-      bgColor: '#fffbeb',
+      gradient: 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)',
+      accentColor: '#d97706',
+      badge: 'Action required',
     },
     {
       title: 'Approved Leaves',
       value: stats?.approvedLeaves ?? '0',
+      sub: 'Authorized time-off',
       icon: CheckCircle2,
-      color: '#2563eb',
-      bgColor: '#eff6ff',
+      gradient: 'linear-gradient(135deg, #2563eb 0%, #6366f1 100%)',
+      accentColor: '#2563eb',
+      badge: 'Synchronized',
     },
   ];
 
   return (
     <div>
-      {/* Welcome Banner */}
-      <div style={styles.banner}>
-        <div>
-          <h1 style={styles.bannerTitle}>
-            Welcome back, {user?.firstName ? `${user.firstName} ${user.lastName}` : user?.username}!
+      {/* Hero Welcome Banner */}
+      <div style={styles.heroBanner}>
+        <div style={styles.heroLeft}>
+          <div style={styles.roleChip}>
+            <Sparkles size={13} color="var(--accent-600)" />
+            <span>Enterprise Workspace &bull; {user?.roles?.[0]?.replace('ROLE_', '') || 'EMPLOYEE'}</span>
+          </div>
+          <h1 style={styles.heroTitle}>
+            {getGreeting()}, {user?.firstName ? `${user.firstName} ${user.lastName}` : user?.username}!
           </h1>
-          <p style={styles.bannerSubtitle}>
-            Role: <strong>{user?.roles?.[0]?.replace('ROLE_', '')}</strong> | System running normally.
+          <p style={styles.heroSubtitle}>
+            Here is your live organizational pulse and workforce activity snapshot for today.
           </p>
         </div>
-        <div style={styles.bannerActions}>
-          <Link to="/leaves/apply" className="btn btn-primary" style={{ display: 'inline-flex', gap: '8px' }}>
+
+        <div style={styles.heroActions}>
+          <Link to="/leaves/apply" className="btn btn-primary" style={{ boxShadow: '0 4px 14px rgba(79, 70, 229, 0.35)' }}>
             <CalendarPlus size={16} />
             <span>Apply for Leave</span>
           </Link>
           {hasAnyRole(['ADMIN', 'HR']) && (
-            <Link to="/employees/new" className="btn btn-secondary" style={{ display: 'inline-flex', gap: '8px' }}>
+            <Link to="/employees/new" className="btn btn-secondary">
               <Users size={16} />
-              <span>Add Employee</span>
+              <span>Onboard Staff</span>
             </Link>
           )}
         </div>
@@ -117,58 +151,165 @@ const Dashboard = () => {
         {statCards.map((card, idx) => {
           const Icon = card.icon;
           return (
-            <div key={idx} className="ems-card" style={styles.statCard}>
-              <div style={styles.statInfo}>
-                <span style={styles.statTitle}>{card.title}</span>
-                <span style={styles.statValue}>{loading ? '...' : card.value}</span>
+            <div key={idx} className="ems-card ems-card-hover" style={styles.statCard}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <span style={styles.statTitle}>{card.title}</span>
+                  <div style={styles.statValue}>{loading ? '...' : card.value}</div>
+                </div>
+                <div style={{ ...styles.iconBadge, background: card.gradient }}>
+                  <Icon size={22} color="#ffffff" />
+                </div>
               </div>
-              <div style={{ ...styles.statIconBadge, backgroundColor: card.bgColor, color: card.color }}>
-                <Icon size={24} />
+              <div style={styles.statFooter}>
+                <span style={{ fontSize: '0.78rem', color: 'var(--slate-500)' }}>{card.sub}</span>
+                <span className="badge badge-neutral" style={{ fontSize: '0.7rem' }}>
+                  {card.badge}
+                </span>
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Quick Action Shortcuts */}
-      <div style={styles.shortcutsSection}>
-        <h2 style={styles.sectionTitle}>Quick Shortcuts</h2>
-        <div style={styles.shortcutsGrid}>
-          <Link to="/attendance" className="ems-card" style={styles.shortcutCard}>
-            <div>
-              <h3 style={styles.shortcutTitle}>Attendance Portal</h3>
-              <p style={styles.shortcutDesc}>Punch your daily in/out time and inspect working hours history.</p>
+      {/* Middle Section: Live Workday Card + Quick Access Shortcuts */}
+      <div style={styles.twoColumnGrid}>
+        {/* Today's Punch Clock Card */}
+        <div className="ems-card" style={{ marginBottom: 0 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Clock size={18} color="var(--primary-600)" />
+              <h2 style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--slate-900)' }}>
+                Today's Workday Tracker
+              </h2>
             </div>
-            <ArrowRight size={20} color="var(--primary-600)" />
-          </Link>
+            <Link to="/attendance" style={{ fontSize: '0.825rem', color: 'var(--primary-600)', textDecoration: 'none', fontWeight: '600' }}>
+              View Full Log &rarr;
+            </Link>
+          </div>
 
-          <Link to="/leaves/balance" className="ems-card" style={styles.shortcutCard}>
-            <div>
-              <h3 style={styles.shortcutTitle}>Leave Balance</h3>
-              <p style={styles.shortcutDesc}>Review your Casual, Sick, and Earned leave quotas.</p>
+          <div style={styles.punchDetailsBox}>
+            <div style={styles.punchStatusIndicator}>
+              <div style={{
+                width: '10px',
+                height: '10px',
+                borderRadius: '50%',
+                backgroundColor: !todayAttendance ? '#94a3b8' : !todayAttendance.checkOutTime ? '#10b981' : '#3b82f6',
+                boxShadow: !todayAttendance ? 'none' : '0 0 10px rgba(16, 185, 129, 0.7)'
+              }} />
+              <span style={{ fontWeight: '700', fontSize: '0.95rem' }}>
+                {!todayAttendance
+                  ? 'Not Clocked In Yet'
+                  : !todayAttendance.checkOutTime
+                  ? 'Currently Active (On the Clock)'
+                  : 'Workday Completed'}
+              </span>
             </div>
-            <ArrowRight size={20} color="var(--primary-600)" />
-          </Link>
 
-          {hasAnyRole(['ADMIN', 'HR', 'MANAGER']) && (
-            <Link to="/leaves/approval" className="ems-card" style={styles.shortcutCard}>
-              <div>
-                <h3 style={styles.shortcutTitle}>Pending Approvals</h3>
-                <p style={styles.shortcutDesc}>Review and approve pending team leave applications.</p>
+            <div style={styles.punchRowGrid}>
+              <div style={styles.punchMetric}>
+                <span style={styles.metricLabel}>Clock In</span>
+                <strong style={styles.metricVal}>{todayAttendance?.checkInTime || '—:—'}</strong>
               </div>
-              <ArrowRight size={20} color="var(--primary-600)" />
-            </Link>
-          )}
+              <div style={styles.punchMetric}>
+                <span style={styles.metricLabel}>Clock Out</span>
+                <strong style={styles.metricVal}>{todayAttendance?.checkOutTime || '—:—'}</strong>
+              </div>
+              <div style={styles.punchMetric}>
+                <span style={styles.metricLabel}>Duration</span>
+                <strong style={{ ...styles.metricVal, color: 'var(--primary-600)' }}>
+                  {todayAttendance?.workingHours != null ? `${todayAttendance.workingHours} hrs` : 'In Progress'}
+                </strong>
+              </div>
+            </div>
 
-          {hasAnyRole(['ADMIN', 'HR']) && (
-            <Link to="/departments" className="ems-card" style={styles.shortcutCard}>
-              <div>
-                <h3 style={styles.shortcutTitle}>Department Operations</h3>
-                <p style={styles.shortcutDesc}>Manage business divisions and employee headcounts.</p>
+            {/* Shift Progress Bar (Target 8 hours) */}
+            <div style={{ marginTop: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--slate-500)', marginBottom: '6px' }}>
+                <span>Daily 8-Hour Target Progress</span>
+                <span>
+                  {todayAttendance?.workingHours
+                    ? `${Math.min(100, Math.round((todayAttendance.workingHours / 8) * 100))}%`
+                    : todayAttendance ? 'In Progress' : '0%'}
+                </span>
               </div>
-              <ArrowRight size={20} color="var(--primary-600)" />
-            </Link>
+              <div style={{ width: '100%', height: '8px', backgroundColor: 'var(--slate-100)', borderRadius: '999px', overflow: 'hidden' }}>
+                <div
+                  style={{
+                    height: '100%',
+                    backgroundColor: 'var(--primary-600)',
+                    width: todayAttendance?.workingHours
+                      ? `${Math.min(100, (todayAttendance.workingHours / 8) * 100)}%`
+                      : todayAttendance ? '30%' : '0%',
+                    transition: 'width 0.4s ease'
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Leave Quotas Mini Pill */}
+          {balance && (
+            <div style={{ marginTop: '16px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <div style={styles.miniQuota}>
+                <span>Casual:</span> <strong>{balance.casualLeaveBalance}d left</strong>
+              </div>
+              <div style={styles.miniQuota}>
+                <span>Sick:</span> <strong>{balance.sickLeaveBalance}d left</strong>
+              </div>
+              <div style={styles.miniQuota}>
+                <span>Earned:</span> <strong>{balance.earnedLeaveBalance}d left</strong>
+              </div>
+            </div>
           )}
+        </div>
+
+        {/* Quick Operations Shortcuts */}
+        <div className="ems-card" style={{ marginBottom: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '18px' }}>
+            <Activity size={18} color="var(--primary-600)" />
+            <h2 style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--slate-900)' }}>
+              Quick Navigation Shortcuts
+            </h2>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <Link to="/attendance" className="ems-card ems-card-hover" style={styles.shortcutRow}>
+              <div>
+                <div style={styles.shortcutName}>Attendance & Timecard</div>
+                <div style={styles.shortcutDesc}>Punch in/out, view working history and weekly logs</div>
+              </div>
+              <ChevronRight size={18} color="var(--slate-400)" />
+            </Link>
+
+            <Link to="/leaves/balance" className="ems-card ems-card-hover" style={styles.shortcutRow}>
+              <div>
+                <div style={styles.shortcutName}>Leave Balances & Quotas</div>
+                <div style={styles.shortcutDesc}>Inspect Casual, Sick, and Earned leave balances</div>
+              </div>
+              <ChevronRight size={18} color="var(--slate-400)" />
+            </Link>
+
+            {hasAnyRole(['ADMIN', 'HR', 'MANAGER']) && (
+              <Link to="/leaves/approval" className="ems-card ems-card-hover" style={styles.shortcutRow}>
+                <div>
+                  <div style={styles.shortcutName}>Leave Approval Queue</div>
+                  <div style={styles.shortcutDesc}>Review and approve pending team requests</div>
+                </div>
+                <ChevronRight size={18} color="var(--slate-400)" />
+              </Link>
+            )}
+
+            {hasAnyRole(['ADMIN', 'HR']) && (
+              <Link to="/departments" className="ems-card ems-card-hover" style={styles.shortcutRow}>
+                <div>
+                  <div style={styles.shortcutName}>Department Management</div>
+                  <div style={styles.shortcutDesc}>Configure departments, organizational codes & headcount</div>
+                </div>
+                <ChevronRight size={18} color="var(--slate-400)" />
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -176,103 +317,161 @@ const Dashboard = () => {
 };
 
 const styles = {
-  banner: {
+  heroBanner: {
     backgroundColor: '#ffffff',
-    borderRadius: 'var(--card-radius)',
-    border: '1px solid var(--gray-200)',
-    padding: '24px 28px',
+    borderRadius: 'var(--radius-xl)',
+    border: '1px solid var(--slate-200)',
+    padding: '28px 32px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '24px',
-    boxShadow: 'var(--shadow-sm)',
+    marginBottom: '26px',
+    boxShadow: 'var(--shadow-card)',
     flexWrap: 'wrap',
-    gap: '16px',
+    gap: '20px',
   },
-  bannerTitle: {
-    fontSize: '1.4rem',
+  heroLeft: {
+    maxWidth: '650px',
+  },
+  roleChip: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    backgroundColor: 'var(--accent-50)',
+    border: '1px solid rgba(99, 102, 241, 0.25)',
+    borderRadius: '9999px',
+    padding: '4px 12px',
+    fontSize: '0.75rem',
     fontWeight: '700',
-    color: 'var(--gray-900)',
+    color: 'var(--accent-700)',
+    marginBottom: '10px',
   },
-  bannerSubtitle: {
-    fontSize: '0.875rem',
-    color: 'var(--gray-600)',
-    marginTop: '4px',
+  heroTitle: {
+    fontSize: '1.65rem',
+    fontWeight: '800',
+    color: 'var(--slate-900)',
+    letterSpacing: '-0.025em',
   },
-  bannerActions: {
+  heroSubtitle: {
+    fontSize: '0.9rem',
+    color: 'var(--slate-500)',
+    marginTop: '6px',
+    lineHeight: 1.5,
+  },
+  heroActions: {
     display: 'flex',
     gap: '12px',
   },
   statsGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
     gap: '20px',
-    marginBottom: '28px',
+    marginBottom: '26px',
   },
   statCard: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '20px 24px',
+    padding: '22px 24px',
     marginBottom: 0,
-  },
-  statInfo: {
     display: 'flex',
     flexDirection: 'column',
+    justifyContent: 'space-between',
   },
   statTitle: {
-    fontSize: '0.8rem',
-    fontWeight: '600',
+    fontSize: '0.78rem',
+    fontWeight: '700',
     textTransform: 'uppercase',
-    letterSpacing: '0.04em',
-    color: 'var(--gray-500)',
-    marginBottom: '6px',
+    letterSpacing: '0.05em',
+    color: 'var(--slate-500)',
   },
   statValue: {
-    fontSize: '1.75rem',
-    fontWeight: '700',
-    color: 'var(--gray-900)',
+    fontSize: '1.9rem',
+    fontWeight: '800',
+    color: 'var(--slate-900)',
+    marginTop: '6px',
+    letterSpacing: '-0.03em',
   },
-  statIconBadge: {
-    width: '48px',
-    height: '48px',
-    borderRadius: '12px',
+  iconBadge: {
+    width: '46px',
+    height: '46px',
+    borderRadius: '14px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12)',
   },
-  shortcutsSection: {
-    marginTop: '10px',
-  },
-  sectionTitle: {
-    fontSize: '1.1rem',
-    fontWeight: '600',
-    color: 'var(--gray-900)',
-    marginBottom: '16px',
-  },
-  shortcutsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: '18px',
-  },
-  shortcutCard: {
+  statFooter: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    textDecoration: 'none',
-    transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-    cursor: 'pointer',
-    marginBottom: 0,
+    marginTop: '16px',
+    paddingTop: '12px',
+    borderTop: '1px solid var(--slate-100)',
   },
-  shortcutTitle: {
-    fontSize: '1rem',
+  twoColumnGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+    gap: '24px',
+  },
+  punchDetailsBox: {
+    padding: '18px 20px',
+    backgroundColor: 'var(--slate-50)',
+    borderRadius: 'var(--radius-md)',
+    border: '1px solid var(--slate-200)',
+  },
+  punchStatusIndicator: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    marginBottom: '16px',
+  },
+  punchRowGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gap: '12px',
+    paddingBottom: '14px',
+    borderBottom: '1px solid var(--slate-200)',
+  },
+  punchMetric: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  metricLabel: {
+    fontSize: '0.72rem',
+    color: 'var(--slate-500)',
+    textTransform: 'uppercase',
     fontWeight: '600',
-    color: 'var(--gray-900)',
-    marginBottom: '4px',
+  },
+  metricVal: {
+    fontSize: '1.05rem',
+    fontWeight: '700',
+    color: 'var(--slate-800)',
+    marginTop: '2px',
+  },
+  miniQuota: {
+    padding: '6px 12px',
+    backgroundColor: 'var(--slate-50)',
+    border: '1px solid var(--slate-200)',
+    borderRadius: '8px',
+    fontSize: '0.8rem',
+    color: 'var(--slate-600)',
+  },
+  shortcutRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '14px 18px',
+    marginBottom: 0,
+    textDecoration: 'none',
+    cursor: 'pointer',
+  },
+  shortcutName: {
+    fontSize: '0.9rem',
+    fontWeight: '600',
+    color: 'var(--slate-800)',
   },
   shortcutDesc: {
-    fontSize: '0.825rem',
-    color: 'var(--gray-500)',
+    fontSize: '0.78rem',
+    color: 'var(--slate-500)',
+    marginTop: '2px',
   },
 };
 

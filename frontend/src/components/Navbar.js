@@ -2,21 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
-import { LogOut, User as UserIcon, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+import {
+  LogOut,
+  Clock,
+  CheckCircle2,
+  Calendar,
+} from 'lucide-react';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [todayAttendance, setTodayAttendance] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Live Digital Clock
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const fetchTodayAttendance = async () => {
     try {
       const res = await api.get('/attendance/today');
       setTodayAttendance(res.data.data);
     } catch (err) {
-      // not checked in or error
+      // not checked in yet
     }
   };
 
@@ -26,27 +37,24 @@ const Navbar = () => {
 
   const handlePunchIn = async () => {
     setLoading(true);
-    setMessage(null);
     try {
       const res = await api.post('/attendance/check-in', { remarks: 'Web portal check-in' });
       setTodayAttendance(res.data.data);
-      setMessage({ type: 'success', text: 'Checked in successfully!' });
     } catch (err) {
-      setMessage({ type: 'error', text: err.response?.data?.message || 'Check-in failed' });
+      alert(err.response?.data?.message || 'Check-in failed');
     } finally {
       setLoading(false);
     }
   };
 
   const handlePunchOut = async () => {
+    if (!window.confirm('Are you ready to clock out for today?')) return;
     setLoading(true);
-    setMessage(null);
     try {
       const res = await api.post('/attendance/check-out', { remarks: 'Web portal check-out' });
       setTodayAttendance(res.data.data);
-      setMessage({ type: 'success', text: 'Checked out successfully!' });
     } catch (err) {
-      setMessage({ type: 'error', text: err.response?.data?.message || 'Check-out failed' });
+      alert(err.response?.data?.message || 'Check-out failed');
     } finally {
       setLoading(false);
     }
@@ -57,66 +65,94 @@ const Navbar = () => {
     navigate('/login');
   };
 
-  const currentDate = new Date().toLocaleDateString('en-US', {
+  const timeString = currentTime.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+
+  const dateString = currentTime.toLocaleDateString('en-US', {
     weekday: 'short',
-    year: 'numeric',
     month: 'short',
     day: 'numeric',
+    year: 'numeric',
   });
+
+  const userRole = user?.roles?.[0]?.replace('ROLE_', '') || 'EMPLOYEE';
 
   return (
     <header style={styles.header}>
+      {/* Left: Live Date & Time Indicator */}
       <div style={styles.leftSection}>
-        <span style={styles.dateBadge}>{currentDate}</span>
+        <div style={styles.timeTicker}>
+          <Calendar size={15} color="var(--slate-500)" />
+          <span style={styles.dateText}>{dateString}</span>
+          <span style={styles.divider}>•</span>
+          <Clock size={15} color="var(--primary-600)" />
+          <span style={styles.liveClock}>{timeString}</span>
+        </div>
       </div>
 
+      {/* Right: Quick Punch Widget & User Menu */}
       <div style={styles.rightSection}>
-        {/* Quick Attendance Check-in / Check-out Button */}
-        <div style={styles.punchSection}>
+        {/* Attendance Punch In / Punch Out Widget */}
+        <div style={styles.punchWidget}>
           {!todayAttendance ? (
             <button
               onClick={handlePunchIn}
               disabled={loading}
               className="btn btn-sm btn-primary"
-              style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+              style={styles.punchBtn}
             >
-              <Clock size={15} />
-              <span>{loading ? 'Processing...' : 'Punch In'}</span>
+              <div style={styles.greenPulseDot} />
+              <span>{loading ? 'Clocking In...' : 'Clock In Today'}</span>
             </button>
           ) : !todayAttendance.checkOutTime ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span className="badge badge-success" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <CheckCircle2 size={13} />
-                In: {todayAttendance.checkInTime}
-              </span>
-              <button
-                onClick={handlePunchOut}
-                disabled={loading}
-                className="btn btn-sm btn-secondary"
-                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-              >
-                <Clock size={15} />
-                <span>{loading ? 'Processing...' : 'Punch Out'}</span>
-              </button>
+            <div style={styles.activePunchBox}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="badge badge-success">
+                  <span className="badge-dot live-pulse" />
+                  Clocked In: {todayAttendance.checkInTime}
+                </span>
+                <button
+                  onClick={handlePunchOut}
+                  disabled={loading}
+                  className="btn btn-sm btn-secondary"
+                  style={{ fontWeight: '600' }}
+                >
+                  {loading ? 'Clocking Out...' : 'Clock Out'}
+                </button>
+              </div>
             </div>
           ) : (
-            <span className="badge badge-primary" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <span className="badge badge-primary">
               <CheckCircle2 size={13} />
-              Done ({todayAttendance.workingHours} hrs)
+              Completed ({todayAttendance.workingHours} hrs)
             </span>
           )}
         </div>
 
-        {/* Profile Link */}
-        <Link to="/profile" style={styles.profileLink} title="View Profile">
-          <UserIcon size={18} />
-          <span>{user?.username}</span>
+        {/* User Profile Pill */}
+        <Link to="/profile" style={styles.userPill} title="View My Profile">
+          <div style={styles.avatar}>
+            {(user?.firstName?.[0] || user?.username?.[0] || 'U').toUpperCase()}
+          </div>
+          <div style={styles.userText}>
+            <span style={styles.userName}>
+              {user?.firstName ? `${user.firstName} ${user.lastName}` : user?.username}
+            </span>
+            <span style={styles.roleChip}>{userRole}</span>
+          </div>
         </Link>
 
-        {/* Logout Button */}
-        <button onClick={handleLogout} className="btn btn-sm btn-secondary" style={styles.logoutBtn} title="Sign Out">
+        {/* Logout */}
+        <button
+          onClick={handleLogout}
+          className="btn btn-sm btn-secondary"
+          style={styles.logoutBtn}
+          title="Sign out of system"
+        >
           <LogOut size={16} />
-          <span>Logout</span>
         </button>
       </div>
     </header>
@@ -126,13 +162,13 @@ const Navbar = () => {
 const styles = {
   header: {
     height: 'var(--topbar-height)',
-    backgroundColor: '#ffffff',
-    borderBottom: '1px solid var(--gray-200)',
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    backdropFilter: 'blur(12px)',
+    borderBottom: '1px solid var(--slate-200)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '0 32px',
-    boxShadow: 'var(--shadow-sm)',
+    padding: '0 36px',
     position: 'sticky',
     top: 0,
     zIndex: 90,
@@ -142,38 +178,98 @@ const styles = {
     alignItems: 'center',
     gap: '12px',
   },
-  dateBadge: {
-    fontSize: '0.85rem',
+  timeTicker: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    backgroundColor: 'var(--slate-50)',
+    padding: '6px 14px',
+    borderRadius: '9999px',
+    border: '1px solid var(--slate-200)',
+    fontSize: '0.825rem',
+  },
+  dateText: {
     fontWeight: '500',
-    color: 'var(--gray-600)',
+    color: 'var(--slate-600)',
+  },
+  divider: {
+    color: 'var(--slate-300)',
+  },
+  liveClock: {
+    fontFamily: "'JetBrains Mono', monospace",
+    fontWeight: '600',
+    color: 'var(--slate-900)',
   },
   rightSection: {
     display: 'flex',
     alignItems: 'center',
     gap: '16px',
   },
-  punchSection: {
+  punchWidget: {
     display: 'flex',
     alignItems: 'center',
   },
-  profileLink: {
+  punchBtn: {
+    padding: '7px 16px',
+    borderRadius: '9999px',
+  },
+  greenPulseDot: {
+    width: '7px',
+    height: '7px',
+    borderRadius: '50%',
+    backgroundColor: '#34d399',
+    boxShadow: '0 0 8px #34d399',
+  },
+  activePunchBox: {
     display: 'flex',
     alignItems: 'center',
-    gap: '6px',
-    color: 'var(--gray-700)',
+    gap: '8px',
+  },
+  userPill: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    padding: '4px 12px 4px 5px',
+    borderRadius: '9999px',
+    backgroundColor: 'var(--slate-100)',
+    border: '1px solid var(--slate-200)',
     textDecoration: 'none',
-    fontSize: '0.875rem',
-    fontWeight: '500',
-    padding: '6px 10px',
-    borderRadius: '6px',
-    backgroundColor: 'var(--gray-100)',
+    transition: 'all 0.15s ease',
+  },
+  avatar: {
+    width: '32px',
+    height: '32px',
+    borderRadius: '50%',
+    background: 'linear-gradient(135deg, var(--accent-600) 0%, var(--primary-600) 100%)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: '700',
+    fontSize: '0.85rem',
+    color: '#ffffff',
+  },
+  userText: {
+    display: 'flex',
+    flexDirection: 'column',
+    lineHeight: 1.15,
+  },
+  userName: {
+    fontSize: '0.825rem',
+    fontWeight: '600',
+    color: 'var(--slate-800)',
+  },
+  roleChip: {
+    fontSize: '0.675rem',
+    fontWeight: '600',
+    color: 'var(--accent-600)',
+    textTransform: 'uppercase',
+    letterSpacing: '0.04em',
   },
   logoutBtn: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    color: 'var(--danger-700)',
-    borderColor: '#fecaca',
+    padding: '8px',
+    borderRadius: '50%',
+    color: 'var(--slate-500)',
+    border: '1px solid var(--slate-200)',
   },
 };
 

@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import { CalendarPlus, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import {
+  CalendarPlus,
+  AlertCircle,
+  CheckCircle2,
+} from 'lucide-react';
 
 const LeaveApply = () => {
   const navigate = useNavigate();
@@ -61,6 +65,9 @@ const LeaveApply = () => {
     }
   };
 
+  const availableQuota = getAvailableForType(formData.leaveType);
+  const isInsufficient = typeof availableQuota === 'number' && requestedDays > availableQuota;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -73,12 +80,18 @@ const LeaveApply = () => {
       return;
     }
 
+    if (isInsufficient) {
+      setError(`Insufficient ${formData.leaveType} leave balance. Available: ${availableQuota}, Requested: ${requestedDays}`);
+      setLoading(false);
+      return;
+    }
+
     try {
       await api.post('/leaves/apply', formData);
       setSuccess('Leave application submitted successfully! Redirecting to history...');
       setTimeout(() => {
         navigate('/leaves/history');
-      }, 1500);
+      }, 1200);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to submit leave application.');
     } finally {
@@ -86,109 +99,165 @@ const LeaveApply = () => {
     }
   };
 
+  const leaveCategories = [
+    {
+      type: 'CASUAL',
+      label: 'Casual Leave (CL)',
+      desc: 'Short personal affairs & emergencies',
+      balance: balance?.casualLeaveBalance ?? 12,
+      badge: 'Annual Quota',
+    },
+    {
+      type: 'SICK',
+      label: 'Sick Leave (SL)',
+      desc: 'Health, sickness & medical appointments',
+      balance: balance?.sickLeaveBalance ?? 10,
+      badge: 'Medical',
+    },
+    {
+      type: 'EARNED',
+      label: 'Earned Leave (EL)',
+      desc: 'Planned vacations, holidays & rest',
+      balance: balance?.earnedLeaveBalance ?? 15,
+      badge: 'Vacation',
+    },
+    {
+      type: 'UNPAID',
+      label: 'Unpaid Leave (LWP)',
+      desc: 'Loss of pay leave with no annual cap',
+      balance: 'Unlimited',
+      badge: 'Uncapped',
+    },
+  ];
+
   return (
-    <div style={{ maxWidth: '720px', margin: '0 auto' }}>
-      <div className="ems-card-header" style={{ marginBottom: '20px' }}>
+    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+      <div className="ems-card-header">
         <div>
-          <h1 className="ems-card-title" style={{ fontSize: '1.5rem' }}>Apply for Leave</h1>
-          <p style={{ fontSize: '0.875rem', color: 'var(--gray-500)', marginTop: '4px' }}>
-            Submit a formal time-off request with automatic balance deduction upon approval
+          <h1 className="ems-card-title">Apply for Time Off</h1>
+          <p className="ems-card-subtitle">
+            Submit a formal leave request with real-time balance validation
           </p>
         </div>
       </div>
 
       {error && (
         <div className="alert alert-danger">
-          <AlertCircle size={18} />
+          <AlertCircle size={18} style={{ flexShrink: 0 }} />
           <span>{error}</span>
         </div>
       )}
 
       {success && (
         <div className="alert alert-success">
-          <CheckCircle2 size={18} />
+          <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
           <span>{success}</span>
         </div>
       )}
 
-      {/* Available Balance Overview */}
-      {balance && (
-        <div className="ems-card" style={{ padding: '16px 20px', marginBottom: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-            <span style={{ fontSize: '0.875rem', fontWeight: '600', color: 'var(--gray-700)' }}>
-              Current Available Quota ({balance.year}):
-            </span>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <span className="badge badge-primary">Casual: {balance.casualLeaveBalance}</span>
-              <span className="badge badge-primary">Sick: {balance.sickLeaveBalance}</span>
-              <span className="badge badge-primary">Earned: {balance.earnedLeaveBalance}</span>
+      {/* Visual Category Selection Cards */}
+      <div style={styles.categoryGrid}>
+        {leaveCategories.map((cat) => (
+          <div
+            key={cat.type}
+            onClick={() => setFormData({ ...formData, leaveType: cat.type })}
+            style={{
+              ...styles.categoryCard,
+              ...(formData.leaveType === cat.type ? styles.categoryCardActive : {}),
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: '700' }}>{cat.label}</span>
+              <span className="badge badge-primary" style={{ fontSize: '0.675rem' }}>
+                {cat.badge}
+              </span>
+            </div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--slate-500)', margin: '6px 0 10px' }}>
+              {cat.desc}
+            </div>
+            <div style={{ fontSize: '0.825rem', fontWeight: '600', color: 'var(--slate-800)' }}>
+              Remaining: <span style={{ color: 'var(--primary-600)', fontSize: '1rem', fontWeight: '800' }}>{cat.balance}</span> {typeof cat.balance === 'number' ? 'days' : ''}
             </div>
           </div>
-        </div>
-      )}
+        ))}
+      </div>
 
       <div className="ems-card">
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">Leave Category *</label>
-            <select
-              name="leaveType"
-              className="form-select"
-              value={formData.leaveType}
-              onChange={handleChange}
-              required
-            >
-              <option value="CASUAL">Casual Leave (Short notice, personal affairs)</option>
-              <option value="SICK">Sick Leave (Medical & health recovery)</option>
-              <option value="EARNED">Earned Leave (Planned vacation / annual quota)</option>
-              <option value="UNPAID">Unpaid Leave (Loss of pay)</option>
-            </select>
-            <div style={{ fontSize: '0.8rem', color: 'var(--gray-500)', marginTop: '6px' }}>
-              Available in category: <strong>{getAvailableForType(formData.leaveType)}</strong> days
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
             <div className="form-group">
               <label className="form-label">Start Date *</label>
-              <input
-                type="date"
-                name="startDate"
-                className="form-input"
-                min={new Date().toISOString().split('T')[0]}
-                value={formData.startDate}
-                onChange={handleChange}
-                required
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="date"
+                  name="startDate"
+                  className="form-input"
+                  min={new Date().toISOString().split('T')[0]}
+                  value={formData.startDate}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
             </div>
 
             <div className="form-group">
               <label className="form-label">End Date *</label>
-              <input
-                type="date"
-                name="endDate"
-                className="form-input"
-                min={formData.startDate || new Date().toISOString().split('T')[0]}
-                value={formData.endDate}
-                onChange={handleChange}
-                required
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="date"
+                  name="endDate"
+                  className="form-input"
+                  min={formData.startDate || new Date().toISOString().split('T')[0]}
+                  value={formData.endDate}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
             </div>
           </div>
 
+          {/* Duration Summary Pill */}
           {requestedDays > 0 && (
-            <div style={{ marginBottom: '16px', padding: '10px 14px', backgroundColor: 'var(--gray-100)', borderRadius: '8px', fontSize: '0.875rem' }}>
-              Total Leave Duration: <strong>{requestedDays} day(s)</strong>
+            <div
+              style={{
+                padding: '14px 18px',
+                borderRadius: 'var(--radius-md)',
+                backgroundColor: isInsufficient ? 'var(--danger-50)' : 'var(--slate-50)',
+                border: `1px solid ${isInsufficient ? 'var(--danger-100)' : 'var(--slate-200)'}`,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '20px',
+              }}
+            >
+              <div>
+                <span style={{ fontSize: '0.85rem', color: isInsufficient ? 'var(--danger-700)' : 'var(--slate-600)' }}>
+                  Total Requested Duration:
+                </span>
+                <strong style={{ fontSize: '1.05rem', marginLeft: '8px', color: isInsufficient ? 'var(--danger-700)' : 'var(--slate-900)' }}>
+                  {requestedDays} calendar day(s)
+                </strong>
+              </div>
+
+              {isInsufficient ? (
+                <span className="badge badge-danger">
+                  Exceeds quota by {requestedDays - availableQuota} day(s)
+                </span>
+              ) : (
+                <span className="badge badge-success">
+                  Quota Available ({availableQuota - requestedDays} remaining after approval)
+                </span>
+              )}
             </div>
           )}
 
           <div className="form-group">
-            <label className="form-label">Reason / Notes *</label>
+            <label className="form-label">Reason / Purpose for Absence *</label>
             <textarea
               name="reason"
               className="form-textarea"
               rows="4"
-              placeholder="State the reason for your time-off request..."
+              placeholder="State the clear reason and handover arrangements for your requested leave..."
               value={formData.reason}
               onChange={handleChange}
               required
@@ -206,17 +275,40 @@ const LeaveApply = () => {
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={loading || requestedDays <= 0}
+              disabled={loading || requestedDays <= 0 || isInsufficient}
               style={{ display: 'inline-flex', gap: '8px' }}
             >
               <CalendarPlus size={16} />
-              <span>{loading ? 'Submitting...' : 'Submit Application'}</span>
+              <span>{loading ? 'Submitting Application...' : 'Submit Leave Request'}</span>
             </button>
           </div>
         </form>
       </div>
     </div>
   );
+};
+
+const styles = {
+  categoryGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+    gap: '14px',
+    marginBottom: '22px',
+  },
+  categoryCard: {
+    padding: '16px 18px',
+    backgroundColor: '#ffffff',
+    borderRadius: 'var(--radius-lg)',
+    border: '2px solid var(--slate-200)',
+    boxShadow: 'var(--shadow-subtle)',
+    cursor: 'pointer',
+    transition: 'all 0.18s ease',
+  },
+  categoryCardActive: {
+    borderColor: 'var(--accent-600)',
+    backgroundColor: 'var(--accent-50)',
+    boxShadow: '0 4px 14px rgba(99, 102, 241, 0.15)',
+  },
 };
 
 export default LeaveApply;

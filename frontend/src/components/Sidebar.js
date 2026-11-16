@@ -11,106 +11,144 @@ import {
   CheckSquare,
   ShieldCheck,
   UserCheck,
+  Sparkles,
 } from 'lucide-react';
 
 const Sidebar = () => {
   const { user, hasAnyRole } = useAuth();
 
-  const navItems = [
+  const navSections = [
     {
-      label: 'Dashboard',
-      path: '/dashboard',
-      icon: LayoutDashboard,
-      roles: ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'],
+      title: 'OVERVIEW',
+      items: [
+        {
+          label: 'Dashboard',
+          path: '/dashboard',
+          icon: LayoutDashboard,
+          roles: ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'],
+        },
+      ],
     },
     {
-      label: 'Employees',
-      path: '/employees',
-      icon: Users,
-      roles: ['ADMIN', 'HR', 'MANAGER'],
+      title: 'ORGANIZATION',
+      items: [
+        {
+          label: 'Employees',
+          path: '/employees',
+          icon: Users,
+          roles: ['ADMIN', 'HR', 'MANAGER'],
+        },
+        {
+          label: 'Departments',
+          path: '/departments',
+          icon: Building2,
+          roles: ['ADMIN', 'HR'],
+        },
+      ],
     },
     {
-      label: 'Departments',
-      path: '/departments',
-      icon: Building2,
-      roles: ['ADMIN', 'HR'],
+      title: 'TIME & LEAVE',
+      items: [
+        {
+          label: 'Attendance Portal',
+          path: '/attendance',
+          icon: CalendarCheck,
+          roles: ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'],
+        },
+        {
+          label: 'Apply for Leave',
+          path: '/leaves/apply',
+          icon: CalendarPlus,
+          roles: ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'],
+        },
+        {
+          label: 'Leave Balance',
+          path: '/leaves/balance',
+          icon: Clock,
+          roles: ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'],
+        },
+        {
+          label: 'Leave History',
+          path: '/leaves/history',
+          icon: UserCheck,
+          roles: ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'],
+        },
+      ],
     },
     {
-      label: 'Attendance',
-      path: '/attendance',
-      icon: CalendarCheck,
-      roles: ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'],
-    },
-    {
-      label: 'Apply Leave',
-      path: '/leaves/apply',
-      icon: CalendarPlus,
-      roles: ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'],
-    },
-    {
-      label: 'Leave Balance',
-      path: '/leaves/balance',
-      icon: Clock,
-      roles: ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'],
-    },
-    {
-      label: 'Leave History',
-      path: '/leaves/history',
-      icon: UserCheck,
-      roles: ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'],
-    },
-    {
-      label: 'Leave Approvals',
-      path: '/leaves/approval',
-      icon: CheckSquare,
-      roles: ['ADMIN', 'HR', 'MANAGER'],
-    },
-    {
-      label: 'User Management',
-      path: '/users',
-      icon: ShieldCheck,
-      roles: ['ADMIN'],
+      title: 'GOVERNANCE',
+      items: [
+        {
+          label: 'Leave Approvals',
+          path: '/leaves/approval',
+          icon: CheckSquare,
+          roles: ['ADMIN', 'HR', 'MANAGER'],
+        },
+        {
+          label: 'User & Roles',
+          path: '/users',
+          icon: ShieldCheck,
+          roles: ['ADMIN'],
+        },
+      ],
     },
   ];
 
-  const filteredNavItems = navItems.filter((item) => hasAnyRole(item.roles));
-
   return (
     <aside style={styles.sidebar}>
+      {/* Brand Header */}
       <div style={styles.brand}>
-        <div style={styles.logoBadge}>EMS</div>
+        <div style={styles.logoBadge}>
+          <Sparkles size={20} color="#ffffff" />
+        </div>
         <div>
           <h2 style={styles.brandTitle}>Enterprise EMS</h2>
-          <span style={styles.brandSubtitle}>Human Capital Suite</span>
+          <span style={styles.brandSubtitle}>Workforce Suite 2026</span>
         </div>
       </div>
 
+      {/* Nav List with Sections */}
       <nav style={styles.nav}>
-        {filteredNavItems.map((item) => {
-          const Icon = item.icon;
+        {navSections.map((sec, sIdx) => {
+          const visibleItems = sec.items.filter((item) => hasAnyRole(item.roles));
+          if (visibleItems.length === 0) return null;
+
           return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              style={({ isActive }) => ({
-                ...styles.navLink,
-                ...(isActive ? styles.navLinkActive : {}),
-              })}
-            >
-              <Icon size={18} style={styles.icon} />
-              <span>{item.label}</span>
-            </NavLink>
+            <div key={sIdx} style={styles.sectionGroup}>
+              <span style={styles.sectionHeader}>{sec.title}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                {visibleItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <NavLink
+                      key={item.path}
+                      to={item.path}
+                      style={({ isActive }) => ({
+                        ...styles.navLink,
+                        ...(isActive ? styles.navLinkActive : {}),
+                      })}
+                    >
+                      <Icon size={18} style={styles.icon} />
+                      <span>{item.label}</span>
+                    </NavLink>
+                  );
+                })}
+              </div>
+            </div>
           );
         })}
       </nav>
 
+      {/* Footer Identity */}
       <div style={styles.footer}>
         <div style={styles.userInfo}>
           <div style={styles.userAvatar}>
             {(user?.firstName?.[0] || user?.username?.[0] || 'U').toUpperCase()}
           </div>
-          <div style={{ minWidth: 0 }}>
-            <div style={styles.userName}>{user?.firstName ? `${user.firstName} ${user.lastName}` : user?.username}</div>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div style={styles.userName}>
+              {user?.firstName ? `${user.firstName} ${user.lastName}` : user?.username}
+            </div>
             <div style={styles.userRole}>
               {user?.roles?.[0]?.replace('ROLE_', '') || 'EMPLOYEE'}
             </div>
@@ -124,7 +162,7 @@ const Sidebar = () => {
 const styles = {
   sidebar: {
     width: 'var(--sidebar-width)',
-    backgroundColor: '#1e293b',
+    backgroundColor: '#0f172a',
     color: '#f8fafc',
     display: 'flex',
     flexDirection: 'column',
@@ -132,70 +170,81 @@ const styles = {
     position: 'sticky',
     top: 0,
     zIndex: 100,
-    borderRight: '1px solid #334155',
+    borderRight: '1px solid #1e293b',
   },
   brand: {
-    padding: '24px 20px',
+    padding: '24px 22px',
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    borderBottom: '1px solid #334155',
+    borderBottom: '1px solid #1e293b',
   },
   logoBadge: {
-    width: '40px',
-    height: '40px',
+    width: '38px',
+    height: '38px',
     borderRadius: '10px',
-    backgroundColor: 'var(--primary-600)',
+    background: 'linear-gradient(135deg, var(--accent-600) 0%, var(--primary-600) 100%)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontWeight: '700',
-    fontSize: '1.1rem',
-    color: '#ffffff',
+    boxShadow: '0 4px 12px rgba(99, 102, 241, 0.35)',
   },
   brandTitle: {
     fontSize: '1rem',
     fontWeight: '700',
     color: '#ffffff',
-    lineHeight: 1.2,
+    letterSpacing: '-0.01em',
   },
   brandSubtitle: {
-    fontSize: '0.72rem',
-    color: '#94a3b8',
+    fontSize: '0.7rem',
+    color: '#64748b',
+    fontWeight: '600',
     textTransform: 'uppercase',
-    letterSpacing: '0.05em',
+    letterSpacing: '0.06em',
   },
   nav: {
     flex: 1,
-    padding: '16px 12px',
+    padding: '20px 14px',
     display: 'flex',
     flexDirection: 'column',
-    gap: '4px',
+    gap: '18px',
     overflowY: 'auto',
+  },
+  sectionGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  sectionHeader: {
+    fontSize: '0.675rem',
+    fontWeight: '700',
+    color: '#475569',
+    letterSpacing: '0.08em',
+    padding: '0 12px 6px',
   },
   navLink: {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    padding: '10px 14px',
+    padding: '9px 12px',
     borderRadius: '8px',
     color: '#94a3b8',
     textDecoration: 'none',
-    fontSize: '0.875rem',
+    fontSize: '0.85rem',
     fontWeight: '500',
     transition: 'all 0.15s ease',
   },
   navLinkActive: {
-    backgroundColor: 'var(--primary-600)',
-    color: '#ffffff',
+    backgroundColor: 'rgba(99, 102, 241, 0.15)',
+    color: '#818cf8',
+    fontWeight: '600',
   },
   icon: {
     flexShrink: 0,
   },
   footer: {
-    padding: '16px 20px',
-    borderTop: '1px solid #334155',
-    backgroundColor: '#0f172a',
+    padding: '16px 18px',
+    borderTop: '1px solid #1e293b',
+    backgroundColor: '#090d16',
   },
   userInfo: {
     display: 'flex',
@@ -203,20 +252,21 @@ const styles = {
     gap: '10px',
   },
   userAvatar: {
-    width: '36px',
-    height: '36px',
+    width: '34px',
+    height: '34px',
     borderRadius: '50%',
-    backgroundColor: '#475569',
+    background: 'linear-gradient(135deg, #475569 0%, #334155 100%)',
+    border: '1.5px solid #64748b',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#f8fafc',
-    fontSize: '0.9rem',
+    fontSize: '0.85rem',
     flexShrink: 0,
   },
   userName: {
-    fontSize: '0.875rem',
+    fontSize: '0.85rem',
     fontWeight: '600',
     color: '#ffffff',
     whiteSpace: 'nowrap',
@@ -224,9 +274,11 @@ const styles = {
     textOverflow: 'ellipsis',
   },
   userRole: {
-    fontSize: '0.75rem',
+    fontSize: '0.72rem',
     color: '#38bdf8',
-    fontWeight: '500',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: '0.03em',
   },
 };
 
