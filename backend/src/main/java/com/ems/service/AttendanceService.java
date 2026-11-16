@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,7 +43,7 @@ public class AttendanceService {
             throw new DuplicateResourceException("You have already checked in today at " + existing.get().getCheckInTime());
         }
 
-        LocalTime now = LocalTime.now();
+        LocalTime now = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
         Attendance attendance = new Attendance();
         attendance.setEmployee(employee);
         attendance.setAttendanceDate(today);
@@ -69,7 +70,7 @@ public class AttendanceService {
             throw new BadRequestException("You have already checked out today at " + attendance.getCheckOutTime());
         }
 
-        LocalTime now = LocalTime.now();
+        LocalTime now = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
         attendance.setCheckOutTime(now);
 
         Duration duration = Duration.between(attendance.getCheckInTime(), now);
