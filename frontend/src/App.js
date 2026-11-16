@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import DashboardLayout from './layouts/DashboardLayout';
@@ -18,13 +18,15 @@ import LeaveBalance from './pages/LeaveBalance';
 import UserManagement from './pages/UserManagement';
 import Unauthorized from './pages/Unauthorized';
 import NotFound from './pages/NotFound';
+import LandingPage from './pages/LandingPage';
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Public Authentication Route */}
+          {/* Public Landing Page & Authentication Routes */}
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
 
           {/* Protected Application Routes inside Dashboard Shell */}
@@ -35,7 +37,6 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
 
             {/* Employee Management */}
