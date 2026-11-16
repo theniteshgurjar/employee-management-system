@@ -44,7 +44,7 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Value("${app.admin.password:Admin@12345}")
+    @Value("${app.admin.password:admin123}")
     private String adminPassword;
 
     @Override
@@ -179,8 +179,27 @@ public class DataInitializer implements CommandLineRunner {
 
             Employee savedDev = employeeRepository.save(devEmp);
             leaveBalanceRepository.save(new LeaveBalance(savedDev, LocalDate.now().getYear()));
-            logger.info("Demo Employee initialized: john_doe (Password: Employee@12345)");
+            logger.info("Demo Employee initialized: john_doe (Password: employee123)");
         }
+
+        // Synchronize default demo passwords for consistency with frontend quick-login
+        userRepository.findByUsername("admin").ifPresent(u -> {
+            u.setPassword(passwordEncoder.encode("admin123"));
+            userRepository.save(u);
+        });
+        userRepository.findByUsername("hr_lead").ifPresent(u -> {
+            u.setPassword(passwordEncoder.encode("hr123"));
+            userRepository.save(u);
+        });
+        userRepository.findByUsername("manager").ifPresent(u -> {
+            u.setPassword(passwordEncoder.encode("manager123"));
+            userRepository.save(u);
+        });
+        userRepository.findByUsername("john_doe").ifPresent(u -> {
+            u.setPassword(passwordEncoder.encode("employee123"));
+            userRepository.save(u);
+        });
+        logger.info("Demo account passwords synchronized: admin123, hr123, manager123, employee123");
 
         logger.info("Database initialization verified successfully.");
     }
