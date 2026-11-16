@@ -255,12 +255,11 @@ const LandingPage = () => {
       {/* Minimal Footer */}
       <footer style={styles.footer}>
         <div style={styles.footerContainer}>
-          <div style={styles.statusIndicator}>
-            <span style={styles.greenPulse} />
-            <span>Local Services: PostgreSQL :5432 &bull; Spring Boot :8080 &bull; React :3000</span>
-          </div>
-          <span style={{ color: '#94a3b8', fontSize: '0.8rem' }}>
-            EMS &bull; Built with Java & React
+          <span style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 500 }}>
+            Employee Management System
+          </span>
+          <span style={{ color: '#94a3b8', fontSize: '0.82rem' }}>
+            &copy; {new Date().getFullYear()} EMS. All rights reserved.
           </span>
         </div>
       </footer>
