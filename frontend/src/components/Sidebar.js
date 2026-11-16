@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   LayoutDashboard,
@@ -11,7 +11,6 @@ import {
   CheckSquare,
   ShieldCheck,
   UserCheck,
-  Sparkles,
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -19,7 +18,7 @@ const Sidebar = () => {
 
   const navSections = [
     {
-      title: 'OVERVIEW',
+      title: 'WORKSPACE',
       items: [
         {
           label: 'Dashboard',
@@ -47,7 +46,7 @@ const Sidebar = () => {
       ],
     },
     {
-      title: 'TIME & LEAVE',
+      title: 'TIME & ATTENDANCE',
       items: [
         {
           label: 'Attendance Portal',
@@ -62,7 +61,7 @@ const Sidebar = () => {
           roles: ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'],
         },
         {
-          label: 'Leave Balance',
+          label: 'Leave Balances',
           path: '/leaves/balance',
           icon: Clock,
           roles: ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'],
@@ -76,7 +75,7 @@ const Sidebar = () => {
       ],
     },
     {
-      title: 'GOVERNANCE',
+      title: 'ADMINISTRATION',
       items: [
         {
           label: 'Leave Approvals',
@@ -97,15 +96,13 @@ const Sidebar = () => {
   return (
     <aside style={styles.sidebar}>
       {/* Brand Header */}
-      <div style={styles.brand}>
-        <div style={styles.logoBadge}>
-          <Sparkles size={20} color="#ffffff" />
-        </div>
+      <Link to="/" style={styles.brand}>
+        <div style={styles.logoMark}>EMS</div>
         <div>
-          <h2 style={styles.brandTitle}>Enterprise EMS</h2>
-          <span style={styles.brandSubtitle}>Workforce Suite 2026</span>
+          <h2 style={styles.brandTitle}>Employee Management</h2>
+          <span style={styles.brandSubtitle}>Workspace Console</span>
         </div>
-      </div>
+      </Link>
 
       {/* Nav List with Sections */}
       <nav style={styles.nav}>
@@ -116,7 +113,7 @@ const Sidebar = () => {
           return (
             <div key={sIdx} style={styles.sectionGroup}>
               <span style={styles.sectionHeader}>{sec.title}</span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                 {visibleItems.map((item) => {
                   const Icon = item.icon;
                   return (
@@ -128,7 +125,7 @@ const Sidebar = () => {
                         ...(isActive ? styles.navLinkActive : {}),
                       })}
                     >
-                      <Icon size={18} style={styles.icon} />
+                      <Icon size={17} style={styles.icon} />
                       <span>{item.label}</span>
                     </NavLink>
                   );
@@ -173,76 +170,77 @@ const styles = {
     borderRight: '1px solid #1e293b',
   },
   brand: {
-    padding: '24px 22px',
+    padding: '20px',
     display: 'flex',
     alignItems: 'center',
-    gap: '12px',
+    gap: '10px',
     borderBottom: '1px solid #1e293b',
+    textDecoration: 'none',
   },
-  logoBadge: {
-    width: '38px',
-    height: '38px',
-    borderRadius: '10px',
-    background: 'linear-gradient(135deg, var(--accent-600) 0%, var(--primary-600) 100%)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 4px 12px rgba(99, 102, 241, 0.35)',
+  logoMark: {
+    backgroundColor: '#ffffff',
+    color: '#0f172a',
+    fontWeight: 800,
+    fontSize: '0.78rem',
+    letterSpacing: '0.05em',
+    padding: '4px 8px',
+    borderRadius: '6px',
   },
   brandTitle: {
-    fontSize: '1rem',
-    fontWeight: '700',
+    fontSize: '0.92rem',
+    fontWeight: 700,
     color: '#ffffff',
-    letterSpacing: '-0.01em',
+    margin: 0,
+    lineHeight: 1.2,
   },
   brandSubtitle: {
     fontSize: '0.7rem',
-    color: '#64748b',
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: '0.06em',
+    color: '#94a3b8',
+    display: 'block',
+    marginTop: '2px',
   },
   nav: {
     flex: 1,
-    padding: '20px 14px',
+    overflowY: 'auto',
+    padding: '16px 12px',
     display: 'flex',
     flexDirection: 'column',
     gap: '18px',
-    overflowY: 'auto',
   },
   sectionGroup: {
     display: 'flex',
     flexDirection: 'column',
   },
   sectionHeader: {
-    fontSize: '0.675rem',
-    fontWeight: '700',
-    color: '#475569',
+    fontSize: '0.68rem',
+    fontWeight: 700,
+    color: '#64748b',
     letterSpacing: '0.08em',
-    padding: '0 12px 6px',
+    padding: '0 10px 8px',
+    textTransform: 'uppercase',
   },
   navLink: {
     display: 'flex',
     alignItems: 'center',
-    gap: '12px',
-    padding: '9px 12px',
-    borderRadius: '8px',
+    gap: '10px',
+    padding: '8px 12px',
+    borderRadius: '6px',
     color: '#94a3b8',
     textDecoration: 'none',
     fontSize: '0.85rem',
-    fontWeight: '500',
+    fontWeight: 500,
     transition: 'all 0.15s ease',
   },
   navLinkActive: {
-    backgroundColor: 'rgba(99, 102, 241, 0.15)',
-    color: '#818cf8',
-    fontWeight: '600',
+    backgroundColor: '#1e293b',
+    color: '#ffffff',
+    fontWeight: 600,
   },
   icon: {
     flexShrink: 0,
   },
   footer: {
-    padding: '16px 18px',
+    padding: '16px 14px',
     borderTop: '1px solid #1e293b',
     backgroundColor: '#090d16',
   },
@@ -252,33 +250,31 @@ const styles = {
     gap: '10px',
   },
   userAvatar: {
-    width: '34px',
-    height: '34px',
-    borderRadius: '50%',
-    background: 'linear-gradient(135deg, #475569 0%, #334155 100%)',
-    border: '1.5px solid #64748b',
+    width: '32px',
+    height: '32px',
+    borderRadius: '6px',
+    backgroundColor: '#3b82f6',
+    color: '#ffffff',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontWeight: '700',
-    color: '#f8fafc',
-    fontSize: '0.85rem',
+    fontWeight: 700,
+    fontSize: '0.8rem',
     flexShrink: 0,
   },
   userName: {
-    fontSize: '0.85rem',
-    fontWeight: '600',
-    color: '#ffffff',
+    fontSize: '0.82rem',
+    fontWeight: 600,
+    color: '#f8fafc',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   },
   userRole: {
-    fontSize: '0.72rem',
-    color: '#38bdf8',
-    fontWeight: '600',
+    fontSize: '0.68rem',
+    color: '#94a3b8',
+    marginTop: '1px',
     textTransform: 'uppercase',
-    letterSpacing: '0.03em',
   },
 };
 

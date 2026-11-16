@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   AlertCircle,
@@ -7,9 +7,7 @@ import {
   User,
   Eye,
   EyeOff,
-  Sparkles,
-  CheckCircle2,
-  Lock,
+  ArrowLeft,
   ArrowRight,
 } from 'lucide-react';
 
@@ -49,187 +47,128 @@ const Login = () => {
 
   return (
     <div style={styles.page}>
-      {/* Left Feature Showcase Banner */}
-      <div style={styles.leftBanner}>
-        <div style={styles.brandRow}>
-          <div style={styles.brandBadge}>
-            <Sparkles size={22} color="#ffffff" />
-          </div>
-          <div>
-            <h2 style={styles.brandTitle}>Enterprise EMS</h2>
-            <span style={styles.brandSubtitle}>Human Capital & Workforce Cloud</span>
-          </div>
-        </div>
-
-        <div style={styles.heroContent}>
-          <div style={styles.pillTag}>Enterprise Release 2026</div>
-          <h1 style={styles.heroHeading}>
-            Intelligent workforce management built for scale.
-          </h1>
-          <p style={styles.heroDesc}>
-            Manage staff lifecycle, departmental hierarchies, real-time attendance punching, and multi-tier leave approval workflows with strict cryptographic audit logs.
-          </p>
-
-          <div style={styles.featureList}>
-            <div style={styles.featureItem}>
-              <CheckCircle2 size={18} color="#34d399" />
-              <span>Role-Based Access Control (Admin, HR, Manager, Employee)</span>
-            </div>
-            <div style={styles.featureItem}>
-              <CheckCircle2 size={18} color="#34d399" />
-              <span>Real-Time Attendance Clock with Hour Computing</span>
-            </div>
-            <div style={styles.featureItem}>
-              <CheckCircle2 size={18} color="#34d399" />
-              <span>Automated Leave Balance Deductions & Restorations</span>
-            </div>
-            <div style={styles.featureItem}>
-              <CheckCircle2 size={18} color="#34d399" />
-              <span>Stateless JWT & BCrypt Password Encryption</span>
-            </div>
-          </div>
-        </div>
-
-        <div style={styles.footerQuote}>
-          <span style={{ color: '#94a3b8', fontSize: '0.8rem' }}>
-            Powered by Java 21, Spring Boot 3, PostgreSQL 18 & React 18
-          </span>
-        </div>
+      {/* Back to Home Link */}
+      <div style={styles.topBar}>
+        <Link to="/" style={styles.backLink}>
+          <ArrowLeft size={16} />
+          <span>Back to Home</span>
+        </Link>
       </div>
 
-      {/* Right Login Card */}
-      <div style={styles.rightSection}>
-        <div style={styles.loginCard}>
-          <div style={styles.cardHeader}>
-            <div style={styles.lockIconBox}>
-              <Lock size={22} color="var(--primary-600)" />
+      <div style={styles.cardContainer}>
+        {/* Brand Header */}
+        <div style={styles.brandRow}>
+          <div style={styles.logoMark}>EMS</div>
+          <span style={styles.brandTitle}>Employee Management System</span>
+        </div>
+
+        <div style={styles.header}>
+          <h1 style={styles.title}>Sign in to your account</h1>
+          <p style={styles.subtitle}>Enter your username and password to access the portal</p>
+        </div>
+
+        {error && (
+          <div className="alert alert-danger" style={{ marginBottom: '18px' }}>
+            <AlertCircle size={16} style={{ flexShrink: 0 }} />
+            <span>{error}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label className="form-label" htmlFor="username">Username</label>
+            <div style={styles.inputWrap}>
+              <User size={16} color="#94a3b8" style={styles.inputIcon} />
+              <input
+                id="username"
+                type="text"
+                className="form-input"
+                style={{ paddingLeft: '38px' }}
+                placeholder="e.g. admin or john_doe"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                autoComplete="username"
+                required
+              />
             </div>
-            <h2 style={styles.cardTitle}>Sign in to your account</h2>
-            <p style={styles.cardSubtitle}>Enter your enterprise credentials to access the workspace</p>
           </div>
 
-          {error && (
-            <div className="alert alert-danger" style={{ marginBottom: '20px' }}>
-              <AlertCircle size={18} style={{ flexShrink: 0 }} />
-              <span>{error}</span>
+          <div className="form-group">
+            <label className="form-label" htmlFor="password">Password</label>
+            <div style={styles.inputWrap}>
+              <KeyRound size={16} color="#94a3b8" style={styles.inputIcon} />
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                className="form-input"
+                style={{ paddingLeft: '38px', paddingRight: '40px' }}
+                placeholder="••••••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={styles.eyeBtn}
+                title={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
             </div>
-          )}
+          </div>
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label" htmlFor="username">Username or Corporate Email</label>
-              <div style={styles.inputWrapper}>
-                <User size={18} style={styles.inputIcon} />
-                <input
-                  id="username"
-                  type="text"
-                  className="form-input"
-                  style={{ paddingLeft: '40px' }}
-                  placeholder="e.g. admin or john_doe"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  autoComplete="username"
-                  required
-                />
-              </div>
-            </div>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={loading}
+            style={styles.submitBtn}
+          >
+            <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
+            {!loading && <ArrowRight size={16} />}
+          </button>
+        </form>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="password">Password</label>
-              <div style={styles.inputWrapper}>
-                <KeyRound size={18} style={styles.inputIcon} />
-                <input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  className="form-input"
-                  style={{ paddingLeft: '40px', paddingRight: '40px' }}
-                  placeholder="••••••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="current-password"
-                  required
-                />
-                <button
-                  type="button"
-                  style={styles.eyeBtn}
-                  onClick={() => setShowPassword(!showPassword)}
-                  title={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
+        {/* Demo Accounts Quick-Fill */}
+        <div style={styles.demoSection}>
+          <div style={styles.demoTitle}>Demo Accounts (1-Click Fill)</div>
+          <div style={styles.demoGrid}>
+            <button
+              type="button"
+              onClick={() => handleDemoFill('admin', 'admin123')}
+              style={styles.demoChip}
+            >
+              <span className="badge badge-danger" style={{ fontSize: '0.68rem', padding: '2px 6px' }}>ADMIN</span>
+              <span style={{ fontWeight: 600 }}>admin</span>
+            </button>
 
             <button
-              type="submit"
-              className="btn btn-primary"
-              style={{ width: '100%', padding: '12px', fontSize: '0.95rem', marginTop: '10px' }}
-              disabled={loading}
+              type="button"
+              onClick={() => handleDemoFill('hr_lead', 'hr123')}
+              style={styles.demoChip}
             >
-              <span>{loading ? 'Authenticating credentials...' : 'Sign In to Portal'}</span>
-              {!loading && <ArrowRight size={18} />}
+              <span className="badge badge-success" style={{ fontSize: '0.68rem', padding: '2px 6px' }}>HR</span>
+              <span style={{ fontWeight: 600 }}>hr_lead</span>
             </button>
-          </form>
 
-          {/* Quick Demo Credentials Autofill */}
-          <div style={styles.demoBox}>
-            <div style={styles.demoLabel}>
-              <Sparkles size={14} color="var(--primary-600)" />
-              <span>One-Click Demo Roles (For Testing & Interviews)</span>
-            </div>
-            <div style={styles.demoButtonsGrid}>
-              <button
-                type="button"
-                className="btn btn-sm btn-secondary"
-                style={styles.demoBtn}
-                onClick={() => handleDemoFill('admin', 'Admin@12345')}
-              >
-                <span style={{ fontSize: '1rem' }}>👑</span>
-                <div style={{ textAlign: 'left', lineHeight: 1.15 }}>
-                  <div style={{ fontWeight: '700', fontSize: '0.8rem' }}>Admin</div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Full System Control</div>
-                </div>
-              </button>
+            <button
+              type="button"
+              onClick={() => handleDemoFill('manager', 'manager123')}
+              style={styles.demoChip}
+            >
+              <span className="badge badge-primary" style={{ fontSize: '0.68rem', padding: '2px 6px' }}>MGR</span>
+              <span style={{ fontWeight: 600 }}>manager</span>
+            </button>
 
-              <button
-                type="button"
-                className="btn btn-sm btn-secondary"
-                style={styles.demoBtn}
-                onClick={() => handleDemoFill('hr_lead', 'Hr@12345')}
-              >
-                <span style={{ fontSize: '1rem' }}>💼</span>
-                <div style={{ textAlign: 'left', lineHeight: 1.15 }}>
-                  <div style={{ fontWeight: '700', fontSize: '0.8rem' }}>HR Lead</div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Staff & Depts</div>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                className="btn btn-sm btn-secondary"
-                style={styles.demoBtn}
-                onClick={() => handleDemoFill('manager', 'Manager@12345')}
-              >
-                <span style={{ fontSize: '1rem' }}>📊</span>
-                <div style={{ textAlign: 'left', lineHeight: 1.15 }}>
-                  <div style={{ fontWeight: '700', fontSize: '0.8rem' }}>Manager</div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Team Leaves</div>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                className="btn btn-sm btn-secondary"
-                style={styles.demoBtn}
-                onClick={() => handleDemoFill('john_doe', 'Employee@12345')}
-              >
-                <span style={{ fontSize: '1rem' }}>👤</span>
-                <div style={{ textAlign: 'left', lineHeight: 1.15 }}>
-                  <div style={{ fontWeight: '700', fontSize: '0.8rem' }}>Employee</div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--slate-500)' }}>Punch & Apply</div>
-                </div>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => handleDemoFill('john_doe', 'employee123')}
+              style={styles.demoChip}
+            >
+              <span className="badge badge-neutral" style={{ fontSize: '0.68rem', padding: '2px 6px' }}>EMP</span>
+              <span style={{ fontWeight: 600 }}>john_doe</span>
+            </button>
           </div>
         </div>
       </div>
@@ -240,192 +179,133 @@ const Login = () => {
 const styles = {
   page: {
     minHeight: '100vh',
-    display: 'flex',
-    backgroundColor: '#ffffff',
-  },
-  leftBanner: {
-    flex: '1.1',
-    background: 'linear-gradient(145deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)',
-    color: '#ffffff',
-    padding: '48px 60px',
+    backgroundColor: '#f8fafc',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between',
-    position: 'relative',
-    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '20px',
+    fontFamily: "'Inter', sans-serif",
+  },
+  topBar: {
+    position: 'absolute',
+    top: '24px',
+    left: '28px',
+  },
+  backLink: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    fontSize: '0.85rem',
+    fontWeight: 500,
+    color: '#64748b',
+    textDecoration: 'none',
+  },
+  cardContainer: {
+    width: '100%',
+    maxWidth: '420px',
+    backgroundColor: '#ffffff',
+    borderRadius: '10px',
+    border: '1px solid #e2e8f0',
+    padding: '32px 30px',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
   },
   brandRow: {
     display: 'flex',
     alignItems: 'center',
-    gap: '14px',
+    gap: '8px',
+    marginBottom: '20px',
   },
-  brandBadge: {
-    width: '44px',
-    height: '44px',
-    borderRadius: '12px',
-    background: 'linear-gradient(135deg, var(--accent-500) 0%, var(--primary-600) 100%)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 8px 20px rgba(99, 102, 241, 0.4)',
+  logoMark: {
+    backgroundColor: '#0f172a',
+    color: '#ffffff',
+    fontWeight: 800,
+    fontSize: '0.75rem',
+    letterSpacing: '0.05em',
+    padding: '3px 7px',
+    borderRadius: '5px',
   },
   brandTitle: {
-    fontSize: '1.25rem',
-    fontWeight: '800',
-    color: '#ffffff',
+    fontSize: '0.88rem',
+    fontWeight: 700,
+    color: '#0f172a',
+  },
+  header: {
+    marginBottom: '22px',
+  },
+  title: {
+    fontSize: '1.35rem',
+    fontWeight: 800,
+    color: '#0f172a',
     letterSpacing: '-0.02em',
+    marginBottom: '4px',
   },
-  brandSubtitle: {
-    fontSize: '0.75rem',
-    color: '#94a3b8',
-    textTransform: 'uppercase',
-    letterSpacing: '0.06em',
-    fontWeight: '600',
-  },
-  heroContent: {
-    maxWidth: '540px',
-    margin: '40px 0',
-  },
-  pillTag: {
-    display: 'inline-block',
-    padding: '5px 12px',
-    borderRadius: '9999px',
-    backgroundColor: 'rgba(99, 102, 241, 0.2)',
-    border: '1px solid rgba(99, 102, 241, 0.4)',
-    color: '#a5b4fc',
-    fontSize: '0.75rem',
-    fontWeight: '700',
-    letterSpacing: '0.06em',
-    textTransform: 'uppercase',
-    marginBottom: '20px',
-  },
-  heroHeading: {
-    fontSize: '2.5rem',
-    fontWeight: '800',
-    lineHeight: 1.15,
-    letterSpacing: '-0.03em',
-    color: '#ffffff',
-    marginBottom: '20px',
-  },
-  heroDesc: {
-    fontSize: '1rem',
-    color: '#cbd5e1',
-    lineHeight: 1.6,
-    marginBottom: '32px',
-  },
-  featureList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '14px',
-  },
-  featureItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    fontSize: '0.9rem',
-    color: '#e2e8f0',
-    fontWeight: '500',
-  },
-  footerQuote: {
-    paddingTop: '24px',
-    borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-  },
-  rightSection: {
-    flex: '1',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '40px 24px',
-    backgroundColor: '#f8fafc',
-  },
-  loginCard: {
-    width: '100%',
-    maxWidth: '460px',
-    backgroundColor: '#ffffff',
-    borderRadius: 'var(--radius-xl)',
-    boxShadow: '0 20px 40px -8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04)',
-    border: '1px solid var(--slate-200)',
-    padding: '40px 36px',
-  },
-  cardHeader: {
-    textAlign: 'center',
-    marginBottom: '28px',
-  },
-  lockIconBox: {
-    width: '50px',
-    height: '50px',
-    borderRadius: '14px',
-    backgroundColor: 'var(--primary-50)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: '0 auto 16px',
-  },
-  cardTitle: {
-    fontSize: '1.45rem',
-    fontWeight: '700',
-    color: 'var(--slate-900)',
-    letterSpacing: '-0.02em',
-  },
-  cardSubtitle: {
+  subtitle: {
     fontSize: '0.85rem',
-    color: 'var(--slate-500)',
-    marginTop: '6px',
+    color: '#64748b',
   },
-  inputWrapper: {
+  inputWrap: {
     position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
   },
   inputIcon: {
     position: 'absolute',
     left: '12px',
-    color: 'var(--slate-400)',
+    top: '50%',
+    transform: 'translateY(-50%)',
     pointerEvents: 'none',
   },
   eyeBtn: {
     position: 'absolute',
     right: '12px',
+    top: '50%',
+    transform: 'translateY(-50%)',
     background: 'none',
     border: 'none',
-    color: 'var(--slate-400)',
     cursor: 'pointer',
-    padding: '4px',
+    color: '#94a3b8',
+    padding: 0,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
   },
-  demoBox: {
-    marginTop: '28px',
-    paddingTop: '20px',
-    borderTop: '1px solid var(--slate-100)',
-  },
-  demoLabel: {
+  submitBtn: {
+    width: '100%',
+    padding: '11px',
+    fontSize: '0.9rem',
+    fontWeight: 600,
+    marginTop: '6px',
     display: 'flex',
-    alignItems: 'center',
     justifyContent: 'center',
-    gap: '6px',
-    fontSize: '0.75rem',
-    fontWeight: '700',
-    color: 'var(--slate-600)',
-    marginBottom: '12px',
+    gap: '8px',
+  },
+  demoSection: {
+    marginTop: '24px',
+    paddingTop: '18px',
+    borderTop: '1px solid #f1f5f9',
+  },
+  demoTitle: {
+    fontSize: '0.72rem',
+    fontWeight: 600,
+    color: '#94a3b8',
     textTransform: 'uppercase',
-    letterSpacing: '0.04em',
+    letterSpacing: '0.05em',
+    marginBottom: '10px',
+    textAlign: 'center',
   },
-  demoButtonsGrid: {
+  demoGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(2, 1fr)',
-    gap: '10px',
+    gap: '8px',
   },
-  demoBtn: {
+  demoChip: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-start',
-    gap: '10px',
-    padding: '8px 12px',
-    border: '1px solid var(--slate-200)',
-    borderRadius: '10px',
-    backgroundColor: '#ffffff',
+    gap: '6px',
+    padding: '7px 10px',
+    borderRadius: '6px',
+    border: '1px solid #e2e8f0',
+    backgroundColor: '#f8fafc',
+    fontSize: '0.8rem',
+    color: '#334155',
     cursor: 'pointer',
     transition: 'all 0.15s ease',
   },

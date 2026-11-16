@@ -298,16 +298,16 @@ const styles = {
   categoryCard: {
     padding: '16px 18px',
     backgroundColor: '#ffffff',
-    borderRadius: 'var(--radius-lg)',
-    border: '2px solid var(--slate-200)',
+    borderRadius: '8px',
+    border: '1.5px solid #e2e8f0',
     boxShadow: 'var(--shadow-subtle)',
     cursor: 'pointer',
-    transition: 'all 0.18s ease',
+    transition: 'all 0.15s ease',
   },
   categoryCardActive: {
-    borderColor: 'var(--accent-600)',
-    backgroundColor: 'var(--accent-50)',
-    boxShadow: '0 4px 14px rgba(99, 102, 241, 0.15)',
+    borderColor: '#0f172a',
+    backgroundColor: '#f8fafc',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
   },
 };
 

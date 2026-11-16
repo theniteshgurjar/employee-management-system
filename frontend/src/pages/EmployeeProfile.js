@@ -11,7 +11,6 @@ import {
   Building2,
   Briefcase,
   ShieldCheck,
-  Clock,
   ArrowLeft,
   Edit3,
   AlertCircle,
@@ -122,143 +121,55 @@ const EmployeeProfile = () => {
         )}
       </div>
 
-      {/* Hero Profile Banner Card */}
-      <div
-        className="ems-card"
-        style={{
-          padding: 0,
-          overflow: 'hidden',
-          marginBottom: '24px',
-          border: '1px solid var(--slate-200)',
-          borderRadius: 'var(--radius-xl)',
-        }}
-      >
-        {/* Cover Art Banner */}
-        <div
-          style={{
-            height: '140px',
-            background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)',
-            position: 'relative',
-            display: 'flex',
-            alignItems: 'flex-end',
-            padding: '0 32px',
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              top: '16px',
-              right: '24px',
-              display: 'flex',
-              gap: '8px',
-            }}
-          >
-            <span
+      {/* Clean Profile Header Card */}
+      <div className="ems-card" style={{ marginBottom: '20px', padding: '24px 28px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+            <div
               style={{
-                background: 'rgba(255,255,255,0.12)',
-                backdropFilter: 'blur(8px)',
+                width: '64px',
+                height: '64px',
+                borderRadius: '8px',
+                backgroundColor: '#0f172a',
                 color: '#ffffff',
-                padding: '4px 12px',
-                borderRadius: '999px',
-                fontSize: '0.75rem',
-                fontWeight: '600',
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.4rem',
+                fontWeight: 700,
+                flexShrink: 0,
               }}
             >
-              Enterprise ID: {profile.employeeCode}
-            </span>
-          </div>
-        </div>
-
-        {/* Floating Identity Strip */}
-        <div
-          style={{
-            padding: '0 32px 28px',
-            position: 'relative',
-            marginTop: '-52px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '16px',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '20px' }}>
-              {/* Profile Avatar */}
-              <div
-                style={{
-                  width: '104px',
-                  height: '104px',
-                  borderRadius: '24px',
-                  background: 'linear-gradient(135deg, var(--accent-600) 0%, var(--primary-600) 100%)',
-                  color: '#ffffff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '2rem',
-                  fontWeight: '800',
-                  boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 0 0 4px #ffffff',
-                  position: 'relative',
-                  flexShrink: 0,
-                }}
-              >
-                {initials}
-                <span
-                  style={{
-                    position: 'absolute',
-                    bottom: '4px',
-                    right: '4px',
-                    width: '16px',
-                    height: '16px',
-                    borderRadius: '50%',
-                    backgroundColor: profile.status === 'ACTIVE' ? '#10b981' : '#ef4444',
-                    border: '3px solid #ffffff',
-                  }}
-                  title={profile.status}
-                />
-              </div>
-
-              {/* Title & Badge */}
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                  <h1 style={{ fontSize: '1.65rem', fontWeight: '800', color: 'var(--slate-900)', letterSpacing: '-0.02em', margin: 0 }}>
-                    {profile.firstName} {profile.lastName}
-                  </h1>
-                  <span
-                    className={`badge ${profile.status === 'ACTIVE' ? 'badge-success' : 'badge-danger'}`}
-                    style={{ fontSize: '0.75rem', padding: '4px 10px' }}
-                  >
-                    <span className="badge-dot" />
-                    {profile.status}
-                  </span>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '6px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '0.95rem', fontWeight: '600', color: 'var(--primary-700)' }}>
-                    {profile.designation}
-                  </span>
-                  <span style={{ color: 'var(--slate-300)' }}>&bull;</span>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--slate-600)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                    <Building2 size={15} color="var(--slate-400)" />
-                    {profile.departmentName || 'General Staff'}
-                  </span>
-                  <span style={{ color: 'var(--slate-300)' }}>&bull;</span>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--slate-500)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                    <Clock size={15} color="var(--slate-400)" />
-                    Joined {profile.joiningDate} ({calculateTenure(profile.joiningDate)})
-                  </span>
-                </div>
-              </div>
+              {initials}
             </div>
 
-            {/* Quick Actions */}
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <Link to="/leaves/apply" className="btn btn-primary" style={{ padding: '9px 16px' }}>
-                <CalendarRange size={16} />
-                <span>Request Time Off</span>
-              </Link>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
+                  {profile.firstName} {profile.lastName}
+                </h1>
+                <span className={`badge ${profile.status === 'ACTIVE' ? 'badge-success' : 'badge-danger'}`}>
+                  {profile.status}
+                </span>
+                <span style={{ fontSize: '0.78rem', color: '#64748b', backgroundColor: '#f1f5f9', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>
+                  {profile.employeeCode}
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '6px', flexWrap: 'wrap', fontSize: '0.85rem', color: '#64748b' }}>
+                <strong style={{ color: '#0f172a' }}>{profile.designation}</strong>
+                <span>&bull;</span>
+                <span>{profile.departmentName || 'General Staff'}</span>
+                <span>&bull;</span>
+                <span>Joined {profile.joiningDate} ({calculateTenure(profile.joiningDate)})</span>
+              </div>
             </div>
           </div>
+
+          <Link to="/leaves/apply" className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
+            <CalendarRange size={15} />
+            <span>Request Time Off</span>
+          </Link>
         </div>
       </div>
 

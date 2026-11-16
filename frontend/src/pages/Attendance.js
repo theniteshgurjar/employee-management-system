@@ -441,7 +441,7 @@ const styles = {
     fontFamily: "'JetBrains Mono', monospace",
     fontSize: '2.5rem',
     fontWeight: '800',
-    color: 'var(--primary-600)',
+    color: '#0f172a',
     letterSpacing: '-0.02em',
     marginTop: '4px',
   },

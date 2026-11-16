@@ -266,14 +266,14 @@ const styles = {
   applicantAvatar: {
     width: '32px',
     height: '32px',
-    borderRadius: '50%',
-    backgroundColor: 'var(--primary-100)',
-    color: 'var(--primary-700)',
+    borderRadius: '6px',
+    backgroundColor: '#0f172a',
+    color: '#ffffff',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontWeight: '700',
-    fontSize: '0.8rem',
+    fontSize: '0.78rem',
   },
 };
 

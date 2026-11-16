@@ -80,16 +80,10 @@ const EmployeeList = () => {
     return matchesDept && matchesStatus;
   });
 
-  const getAvatarGradient = (code) => {
-    const gradients = [
-      'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
-      'linear-gradient(135deg, #059669 0%, #10b981 100%)',
-      'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)',
-      'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)',
-      'linear-gradient(135deg, #0891b2 0%, #06b6d4 100%)',
-    ];
-    const index = (code?.charCodeAt(code.length - 1) || 0) % gradients.length;
-    return gradients[index];
+  const getAvatarColor = (code) => {
+    const colors = ['#2563eb', '#7c3aed', '#059669', '#0284c7', '#0f172a'];
+    const index = (code?.charCodeAt(code.length - 1) || 0) % colors.length;
+    return colors[index];
   };
 
   return (
@@ -245,7 +239,7 @@ const EmployeeList = () => {
                           <div
                             style={{
                               ...styles.tableAvatar,
-                              background: getAvatarGradient(emp.employeeCode),
+                              backgroundColor: getAvatarColor(emp.employeeCode),
                             }}
                           >
                             {(emp.firstName?.[0] || 'E').toUpperCase()}
@@ -311,7 +305,7 @@ const EmployeeList = () => {
           {filteredEmployees.map((emp) => (
             <div key={emp.id} className="ems-card ems-card-hover" style={styles.employeeCard}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '14px' }}>
-                <div style={{ ...styles.gridAvatar, background: getAvatarGradient(emp.employeeCode) }}>
+                <div style={{ ...styles.gridAvatar, backgroundColor: getAvatarColor(emp.employeeCode) }}>
                   {(emp.firstName?.[0] || 'E').toUpperCase()}
                 </div>
                 <div style={{ minWidth: 0, flex: 1 }}>
