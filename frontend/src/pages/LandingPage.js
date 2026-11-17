@@ -13,6 +13,13 @@ const LandingPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  // Dynamic Swagger documentation URL adapting to deployed backend or local development
+  const swaggerUrl =
+    process.env.REACT_APP_SWAGGER_URL ||
+    (process.env.REACT_APP_API_URL
+      ? process.env.REACT_APP_API_URL.replace(/\/api\/?$/, '') + '/swagger-ui.html'
+      : 'http://localhost:8080/swagger-ui.html');
+
   const handleQuickLogin = (username, password) => {
     // Navigate to login page with state or let them autofill directly
     navigate('/login', { state: { prefillUser: username, prefillPass: password } });
@@ -32,7 +39,7 @@ const LandingPage = () => {
             <a href="#features" style={styles.link}>Features</a>
             <a href="#demo" style={styles.link}>Demo Logins</a>
             <a
-              href="http://localhost:8080/swagger-ui.html"
+              href={swaggerUrl}
               target="_blank"
               rel="noreferrer"
               style={styles.link}
@@ -70,7 +77,7 @@ const LandingPage = () => {
               <ArrowRight size={16} />
             </Link>
             <a
-              href="http://localhost:8080/swagger-ui.html"
+              href={swaggerUrl}
               target="_blank"
               rel="noreferrer"
               className="btn btn-secondary"
