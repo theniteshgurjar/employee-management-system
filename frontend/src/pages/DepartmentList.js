@@ -268,14 +268,14 @@ const DepartmentList = () => {
 const styles = {
   deptGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-    gap: '22px',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+    gap: '16px',
   },
   deptCard: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    padding: '24px',
+    padding: '20px',
     marginBottom: 0,
   },
   codeBadge: {

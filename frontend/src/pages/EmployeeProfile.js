@@ -174,7 +174,7 @@ const EmployeeProfile = () => {
       </div>
 
       {/* Grid Content */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '24px', marginBottom: '24px' }}>
+      <div className="grid-responsive-2" style={{ marginBottom: '20px' }}>
         {/* Personal & Contact Information Card */}
         <div className="ems-card" style={{ margin: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', paddingBottom: '14px', borderBottom: '1px solid var(--slate-100)' }}>

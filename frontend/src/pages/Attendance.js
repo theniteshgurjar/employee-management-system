@@ -406,9 +406,9 @@ const Attendance = () => {
 const styles = {
   punchHero: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-    gap: '28px',
-    padding: '28px 32px',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+    gap: '20px',
+    padding: '20px 22px',
     backgroundColor: '#ffffff',
   },
   punchHeroLeft: {
@@ -439,7 +439,7 @@ const styles = {
   },
   stopwatchDigits: {
     fontFamily: "'JetBrains Mono', monospace",
-    fontSize: '2.5rem',
+    fontSize: 'clamp(1.75rem, 5vw, 2.5rem)',
     fontWeight: '800',
     color: '#0f172a',
     letterSpacing: '-0.02em',
@@ -447,8 +447,8 @@ const styles = {
   },
   timestampsRow: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(3, 1fr)',
-    gap: '12px',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))',
+    gap: '10px',
   },
   timestampCard: {
     display: 'flex',

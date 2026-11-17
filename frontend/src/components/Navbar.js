@@ -7,9 +7,10 @@ import {
   Clock,
   CheckCircle2,
   Calendar,
+  Menu,
 } from 'lucide-react';
 
-const Navbar = () => {
+const Navbar = ({ onToggleSidebar }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [todayAttendance, setTodayAttendance] = useState(null);
@@ -81,10 +82,19 @@ const Navbar = () => {
   const userRole = user?.roles?.[0]?.replace('ROLE_', '') || 'EMPLOYEE';
 
   return (
-    <header style={styles.header}>
-      {/* Left: Live Date & Time Indicator */}
+    <header className="navbar-container" style={styles.header}>
+      {/* Left: Mobile Menu Toggle & Live Date & Time Indicator */}
       <div style={styles.leftSection}>
-        <div style={styles.timeTicker}>
+        <button
+          className="mobile-menu-btn"
+          onClick={onToggleSidebar}
+          aria-label="Toggle navigation menu"
+          title="Open Menu"
+        >
+          <Menu size={19} />
+        </button>
+
+        <div className="time-ticker-badge" style={styles.timeTicker}>
           <Calendar size={15} color="var(--slate-500)" />
           <span style={styles.dateText}>{dateString}</span>
           <span style={styles.divider}>•</span>
@@ -105,14 +115,14 @@ const Navbar = () => {
               style={styles.punchBtn}
             >
               <div style={styles.greenPulseDot} />
-              <span>{loading ? 'Clocking In...' : 'Clock In Today'}</span>
+              <span>{loading ? 'Clocking In...' : 'Clock In'}</span>
             </button>
           ) : !todayAttendance.checkOutTime ? (
             <div style={styles.activePunchBox}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span className="badge badge-success">
+                <span className="badge badge-success" style={{ display: 'inline-flex' }}>
                   <span className="badge-dot live-pulse" />
-                  Clocked In: {todayAttendance.checkInTime}
+                  In: {todayAttendance.checkInTime}
                 </span>
                 <button
                   onClick={handlePunchOut}
@@ -127,7 +137,7 @@ const Navbar = () => {
           ) : (
             <span className="badge badge-primary">
               <CheckCircle2 size={13} />
-              Completed ({todayAttendance.workingHours} hrs)
+              <span>{todayAttendance.workingHours} hrs</span>
             </span>
           )}
         </div>
@@ -137,7 +147,7 @@ const Navbar = () => {
           <div style={styles.avatar}>
             {(user?.firstName?.[0] || user?.username?.[0] || 'U').toUpperCase()}
           </div>
-          <div style={styles.userText}>
+          <div className="navbar-user-text" style={styles.userText}>
             <span style={styles.userName}>
               {user?.firstName ? `${user.firstName} ${user.lastName}` : user?.username}
             </span>

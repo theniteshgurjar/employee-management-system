@@ -11,9 +11,10 @@ import {
   CheckSquare,
   ShieldCheck,
   UserCheck,
+  X,
 } from 'lucide-react';
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, onClose }) => {
   const { user, hasAnyRole } = useAuth();
 
   const navSections = [
@@ -94,71 +95,84 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside style={styles.sidebar}>
-      {/* Brand Header */}
-      <Link to="/" style={styles.brand}>
-        <div style={styles.logoMark}>EMS</div>
-        <div>
-          <h2 style={styles.brandTitle}>Employee Management</h2>
-          <span style={styles.brandSubtitle}>Workspace Console</span>
+    <div className={`sidebar-wrapper ${isOpen ? 'open' : ''}`}>
+      <aside style={styles.sidebar}>
+        {/* Brand Header */}
+        <div style={styles.brandContainer}>
+          <Link to="/" style={styles.brand} onClick={onClose}>
+            <div style={styles.logoMark}>EMS</div>
+            <div>
+              <h2 style={styles.brandTitle}>Employee Management</h2>
+              <span style={styles.brandSubtitle}>Workspace Console</span>
+            </div>
+          </Link>
+          <button
+            onClick={onClose}
+            className="sidebar-close-btn"
+            aria-label="Close sidebar"
+            title="Close menu"
+          >
+            <X size={18} />
+          </button>
         </div>
-      </Link>
 
-      {/* Nav List with Sections */}
-      <nav style={styles.nav}>
-        {navSections.map((sec, sIdx) => {
-          const visibleItems = sec.items.filter((item) => hasAnyRole(item.roles));
-          if (visibleItems.length === 0) return null;
+        {/* Nav List with Sections */}
+        <nav style={styles.nav}>
+          {navSections.map((sec, sIdx) => {
+            const visibleItems = sec.items.filter((item) => hasAnyRole(item.roles));
+            if (visibleItems.length === 0) return null;
 
-          return (
-            <div key={sIdx} style={styles.sectionGroup}>
-              <span style={styles.sectionHeader}>{sec.title}</span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                {visibleItems.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <NavLink
-                      key={item.path}
-                      to={item.path}
-                      style={({ isActive }) => ({
-                        ...styles.navLink,
-                        ...(isActive ? styles.navLinkActive : {}),
-                      })}
-                    >
-                      <Icon size={17} style={styles.icon} />
-                      <span>{item.label}</span>
-                    </NavLink>
-                  );
-                })}
+            return (
+              <div key={sIdx} style={styles.sectionGroup}>
+                <span style={styles.sectionHeader}>{sec.title}</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  {visibleItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <NavLink
+                        key={item.path}
+                        to={item.path}
+                        onClick={onClose}
+                        style={({ isActive }) => ({
+                          ...styles.navLink,
+                          ...(isActive ? styles.navLinkActive : {}),
+                        })}
+                      >
+                        <Icon size={17} style={styles.icon} />
+                        <span>{item.label}</span>
+                      </NavLink>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </nav>
+
+        {/* Footer Identity */}
+        <div style={styles.footer}>
+          <div style={styles.userInfo}>
+            <div style={styles.userAvatar}>
+              {(user?.firstName?.[0] || user?.username?.[0] || 'U').toUpperCase()}
+            </div>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={styles.userName}>
+                {user?.firstName ? `${user.firstName} ${user.lastName}` : user?.username}
+              </div>
+              <div style={styles.userRole}>
+                {user?.roles?.[0]?.replace('ROLE_', '') || 'EMPLOYEE'}
               </div>
             </div>
-          );
-        })}
-      </nav>
-
-      {/* Footer Identity */}
-      <div style={styles.footer}>
-        <div style={styles.userInfo}>
-          <div style={styles.userAvatar}>
-            {(user?.firstName?.[0] || user?.username?.[0] || 'U').toUpperCase()}
-          </div>
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <div style={styles.userName}>
-              {user?.firstName ? `${user.firstName} ${user.lastName}` : user?.username}
-            </div>
-            <div style={styles.userRole}>
-              {user?.roles?.[0]?.replace('ROLE_', '') || 'EMPLOYEE'}
-            </div>
           </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </div>
   );
 };
 
 const styles = {
   sidebar: {
-    width: 'var(--sidebar-width)',
+    width: '100%',
     backgroundColor: '#0f172a',
     color: '#f8fafc',
     display: 'flex',
@@ -169,13 +183,20 @@ const styles = {
     zIndex: 100,
     borderRight: '1px solid #1e293b',
   },
+  brandContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingRight: '12px',
+    borderBottom: '1px solid #1e293b',
+  },
   brand: {
     padding: '20px',
     display: 'flex',
     alignItems: 'center',
     gap: '10px',
-    borderBottom: '1px solid #1e293b',
     textDecoration: 'none',
+    flex: 1,
   },
   logoMark: {
     backgroundColor: '#ffffff',

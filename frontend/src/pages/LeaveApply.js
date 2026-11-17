@@ -184,7 +184,7 @@ const LeaveApply = () => {
 
       <div className="ems-card">
         <form onSubmit={handleSubmit}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <div className="grid-responsive-2" style={{ gap: '16px' }}>
             <div className="form-group">
               <label className="form-label">Start Date *</label>
               <div style={{ position: 'relative' }}>
@@ -291,9 +291,9 @@ const LeaveApply = () => {
 const styles = {
   categoryGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-    gap: '14px',
-    marginBottom: '22px',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+    gap: '12px',
+    marginBottom: '20px',
   },
   categoryCard: {
     padding: '16px 18px',

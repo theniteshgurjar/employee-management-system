@@ -140,7 +140,7 @@ const EmployeeForm = () => {
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: '28px', alignItems: 'start' }}>
+      <div className="employee-form-layout">
         {/* Form Body */}
         <form onSubmit={handleSubmit}>
           {/* Section 1 */}

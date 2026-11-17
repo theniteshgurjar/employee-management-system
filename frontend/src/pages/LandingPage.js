@@ -28,7 +28,7 @@ const LandingPage = () => {
             <span style={styles.logoText}>Employee Management</span>
           </Link>
 
-          <nav style={styles.navLinks}>
+          <nav className="landing-nav-links" style={styles.navLinks}>
             <a href="#features" style={styles.link}>Features</a>
             <a href="#demo" style={styles.link}>Demo Logins</a>
             <a
@@ -343,7 +343,7 @@ const styles = {
     marginBottom: '20px',
   },
   headline: {
-    fontSize: '3rem',
+    fontSize: 'clamp(2rem, 5.5vw, 3rem)',
     fontWeight: 800,
     letterSpacing: '-0.04em',
     lineHeight: 1.15,
@@ -420,13 +420,13 @@ const styles = {
   },
   previewRow: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(3, 1fr)',
-    gap: '14px',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+    gap: '12px',
     marginBottom: '20px',
   },
   mockCard: {
     backgroundColor: '#f8fafc',
-    padding: '12px 16px',
+    padding: '12px 14px',
     borderRadius: '8px',
     border: '1px solid #e2e8f0',
   },
@@ -451,11 +451,12 @@ const styles = {
   mockTable: {
     border: '1px solid #e2e8f0',
     borderRadius: '8px',
-    overflow: 'hidden',
+    overflowX: 'auto',
   },
   mockTableHeader: {
     display: 'grid',
     gridTemplateColumns: '2fr 1.2fr 1.5fr 1fr',
+    minWidth: '460px',
     padding: '10px 14px',
     backgroundColor: '#f8fafc',
     fontSize: '0.72rem',
@@ -467,6 +468,7 @@ const styles = {
   mockTableRow: {
     display: 'grid',
     gridTemplateColumns: '2fr 1.2fr 1.5fr 1fr',
+    minWidth: '460px',
     padding: '12px 14px',
     alignItems: 'center',
     borderBottom: '1px solid #f1f5f9',

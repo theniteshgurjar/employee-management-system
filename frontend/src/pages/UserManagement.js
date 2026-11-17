@@ -136,7 +136,7 @@ const UserManagement = () => {
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
             {/* Username */}
             <div className="form-group" style={{ margin: 0 }}>
               <label className="form-label">Username *</label>
@@ -215,7 +215,7 @@ const UserManagement = () => {
               Select one or more authorization privileges for this identity
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px' }}>
               {ROLE_DEFINITIONS.map((def) => {
                 const isSelected = formData.roles.includes(def.role);
                 const IconComponent = def.icon;
