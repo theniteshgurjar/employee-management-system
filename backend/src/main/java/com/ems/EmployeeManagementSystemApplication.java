@@ -3,6 +3,7 @@ package com.ems;
 import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.TimeZone;
 
@@ -12,8 +13,10 @@ import java.util.TimeZone;
  * In Spring Boot:
  * - @SpringBootApplication enables component scanning, auto-configuration,
  *   and configuration property support.
+ * - @EnableScheduling activates Spring's background task execution and cron jobs.
  */
 @SpringBootApplication
+@EnableScheduling
 public class EmployeeManagementSystemApplication {
 
     @PostConstruct
